@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://0kd18rwefmvy"]
+
+[ext_resource type="Script" path="res://scenes/ui/admin_window/debug_menu/debug_menu.gd" id="1_hlcbd"]
+
+[node name="DebugMenu" type="VBoxContainer"]
+size_flags_horizontal = 3
+script = ExtResource("1_hlcbd")
+
+[node name="ToggleRestartWithActiveViewers" type="CheckButton" parent="."]
+layout_mode = 2
+button_pressed = true
+text = "Restart with Active Viewers"
+
+[connection signal="toggled" from="ToggleRestartWithActiveViewers" to="." method="_on_toggle_restart_with_active_viewers_toggled"]

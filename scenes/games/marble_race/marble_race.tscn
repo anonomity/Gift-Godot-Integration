@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://cgnppxb5qpfsg"]
+[gd_scene load_steps=16 format=3 uid="uid://cgnppxb5qpfsg"]
 
 [ext_resource type="Script" path="res://scenes/games/marble_race/scripts/marble_race.gd" id="1_a3unp"]
 [ext_resource type="Script" path="res://scenes/playground/script/body.gd" id="2_ibax2"]
@@ -6,6 +6,7 @@
 [ext_resource type="Shader" path="res://shared/shaders/hexagone.gdshader" id="4_p3agy"]
 [ext_resource type="PackedScene" uid="uid://dae8jf055dv4o" path="res://scenes/games/marble_race/end_area/end_area.tscn" id="5_gnoyd"]
 [ext_resource type="PackedScene" uid="uid://sq2e8m82bur0" path="res://scenes/games/marble_race/walls/walls.tscn" id="6_qwdlx"]
+[ext_resource type="PackedScene" uid="uid://fmo8nhxqjycj" path="res://scenes/ui/navigate_to_menu_button.tscn" id="7_cwv11"]
 
 [sub_resource type="Gradient" id="Gradient_2n05e"]
 offsets = PackedFloat32Array(0, 0.512658, 1)
@@ -146,12 +147,12 @@ point_count = 13
 [node name="MarbleRace" type="Node2D"]
 script = ExtResource("1_a3unp")
 
-[node name="ParallaxBackground" type="ParallaxBackground" parent="." groups=["Background"]]
+[node name="Background" type="ParallaxBackground" parent="." groups=["Background"]]
 
-[node name="ParallaxLayer" type="ParallaxLayer" parent="ParallaxBackground"]
+[node name="ParallaxLayer" type="ParallaxLayer" parent="Background"]
 motion_scale = Vector2(0.6, 0.6)
 
-[node name="Hexagone" type="ColorRect" parent="ParallaxBackground/ParallaxLayer"]
+[node name="Hexagone" type="ColorRect" parent="Background/ParallaxLayer"]
 material = SubResource("ShaderMaterial_r7pgy")
 offset_left = -305.0
 offset_top = -638.0
@@ -232,6 +233,29 @@ curve = SubResource("Curve2D_cllto")
 
 [node name="Path2D" parent="Walls2" index="0"]
 curve = SubResource("Curve2D_qneh5")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Overlay" type="MarginContainer" parent="UI"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/Overlay"]
+layout_mode = 2
+
+[node name="NavigateToMenuButton" parent="UI/Overlay/VBoxContainer" instance=ExtResource("7_cwv11")]
+layout_mode = 2
+
+[connection signal="scene_changing" from="UI/Overlay/VBoxContainer/NavigateToMenuButton" to="." method="_on_navigate_to_menu_button_scene_changing"]
 
 [editable path="EndArea"]
 [editable path="Walls"]

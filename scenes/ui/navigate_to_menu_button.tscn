@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://fmo8nhxqjycj"]
+
+[ext_resource type="Texture2D" uid="uid://6u0ildb07r57" path="res://shared/visuals/button-arrow-left.svg" id="1_ewmkp"]
+[ext_resource type="Script" path="res://scenes/ui/scripts/navigate_to_menu_button.gd" id="2_xky84"]
+
+[node name="NavigateToMenuButton" type="TextureButton"]
+size_flags_horizontal = 0
+size_flags_vertical = 0
+texture_normal = ExtResource("1_ewmkp")
+script = ExtResource("2_xky84")
+
+[connection signal="pressed" from="." to="." method="_on_pressed"]

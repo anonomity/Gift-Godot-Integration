@@ -9,13 +9,14 @@ enum GAME_STATE {WAITING, RUNNING, WINNER, PAUSED}
 var state: GAME_STATE = GAME_STATE.WAITING
 
 @onready var viewer_container: Node2D = $ViewerContainer
-@onready var waiting: Label = $CanvasLayer/Waiting
-@onready var countdown: Label = $CanvasLayer/Countdown
-@onready var winner: Label = $CanvasLayer/Winner
-@onready var waiting_list: VBoxContainer = $CanvasLayer/WaitingList
-@onready var dead_list: VBoxContainer = $CanvasLayer/DeadList
+@onready var waiting: Label = $UI/Waiting
+@onready var countdown: Label = $UI/Countdown
+@onready var winner: Label = $UI/Winner
+@onready var waiting_list: VBoxContainer = $UI/WaitingList
+@onready var dead_list: VBoxContainer = $UI/DeadList
+@onready var node_ui = $UI
 
-var viewer_avatars: Dictionary = {}
+var viewers: Dictionary = {}
 
 func _ready() -> void:
 	Viewers.viewer_active.connect(on_viewer_active)
@@ -27,6 +28,8 @@ func _ready() -> void:
 
 	GameConfigManager.load_config()
 
+	SignalBus.ui_visibility_toggled.connect(_on_ui_visibility_toggled)
+
 	GiftSingleton.streamer_start.connect(on_streamer_start)
 	GiftSingleton.streamer_wait.connect(on_streamer_wait)
 
@@ -34,19 +37,17 @@ func _ready() -> void:
 	GiftSingleton.add_game_command("fire", on_viewer_fire, 2, 2)
 	GiftSingleton.add_alias("fire", "f")
 
-	SignalBus.transparency_toggled.connect(on_transparency_toggled)
-
 	change_state(GAME_STATE.WAITING)
 	Transition.hide_transition()
+
+	var active_viewers = GiftSingleton.active_viewers
+	for viewer in active_viewers:
+		spawn_viewer(viewer)
 
 func _process(_delta: float) -> void:
 	if Input.is_action_just_pressed("ui_cancel"):
 		GameConfigManager.save_config()
 		SceneSwitcher.change_scene_to(SceneSwitcher.selection_scene, true, null)
-
-	#TODO: Move to a global shortcut script and/or to command window
-	if Input.is_action_just_pressed("transparent"):
-		SignalBus.emit_transparency_toggled(not get_viewport().transparent_bg)
 
 func change_state(new_state: GAME_STATE) -> void:
 	state = new_state
@@ -87,24 +88,24 @@ func fire_viewer(viewer_name: String, angle: float, power: float) -> void:
 
 	var impulse: Vector2 = Vector2.RIGHT.rotated(-deg_to_rad(angle))
 	impulse *= clamp(remap(power, 0.0, 100.0, 0.0, 4000.0), 0.0, 4000.0)
-	viewer_avatars[viewer_name].call_deferred("apply_central_impulse", impulse)
+	viewers[viewer_name].call_deferred("apply_central_impulse", impulse)
 
 func spawn_viewer(viewer_name: String) -> void:
-	if viewer_avatars.has(viewer_name): return
+	if viewers.has(viewer_name): return
 
 	var instance: RigidBody2D = player_scene.instantiate()
 	instance.viewer_name = viewer_name
 	viewer_container.call_deferred("add_child", instance)
-	viewer_avatars[viewer_name] = instance
+	viewers[viewer_name] = instance
 	await instance.ready
 	instance.global_position = Vector2(randf_range(150, 1850), randf_range(100, 900))
 	push_bullet(instance)
 
 func despawn_viewer(viewer_name: String) -> void:
-	if not viewer_avatars.has(viewer_name): return
+	if not viewers.has(viewer_name): return
 	prints("despawn", viewer_name)
-	viewer_avatars[viewer_name].queue_free()
-	viewer_avatars.erase(viewer_name)
+	viewers[viewer_name].queue_free()
+	viewers.erase(viewer_name)
 
 func push_bullet(obj: RigidBody2D) -> void:
 	var push_vec: Vector2 = obj.global_transform.x.rotated(deg_to_rad(randi_range(0, 360)))
@@ -140,11 +141,6 @@ func on_last_viewer_active(viewer_name: String) -> void:
 func _on_countdown_finished() -> void:
 	change_state(GAME_STATE.RUNNING)
 
-func on_transparency_toggled(transparent: bool) -> void:
-	for node in get_tree().get_nodes_in_group("Background"):
-		node.visible = not transparent
-		get_viewport().transparent_bg = transparent
-
 func _on_death_area_body_entered(body: Node2D) -> void:
 	if not body.is_in_group("Players"): return
 	Viewers.dead(body.viewer_name)
@@ -170,5 +166,12 @@ func on_streamer_start(arg_arr : PackedStringArray) -> void:
 func on_streamer_wait() -> void:
 	change_state(GAME_STATE.WAITING)
 
+func _on_navigate_to_menu_button_scene_changing():
+	print("Leaving %s scene with %d viewers" % [
+		get_tree().current_scene.scene_file_path.get_file().get_basename(),
+		GiftSingleton.active_viewers.size()
+	])
 
-
+func _on_ui_visibility_toggled(ui_visible: bool):
+	node_ui.visible = ui_visible
+	

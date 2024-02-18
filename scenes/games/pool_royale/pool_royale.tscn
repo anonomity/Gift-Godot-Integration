@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://c75i61yyvkd1e"]
+[gd_scene load_steps=15 format=3 uid="uid://c75i61yyvkd1e"]
 
 [ext_resource type="Script" path="res://scenes/games/pool_royale/scripts/pool_royale.gd" id="1_x1ler"]
 [ext_resource type="FontFile" uid="uid://dd1r2fwpg8dya" path="res://shared/fonts/MPLUSCodeLatin-Medium.ttf" id="2_87d87"]
@@ -8,6 +8,7 @@
 [ext_resource type="Script" path="res://scenes/games/cannon/countdown.gd" id="4_ilfop"]
 [ext_resource type="PackedScene" uid="uid://c8bdqqhg6e1u8" path="res://scenes/games/pool_royale/moving_object.tscn" id="6_5228q"]
 [ext_resource type="PackedScene" uid="uid://d1ktqkqvqmhyd" path="res://scenes/ui/viewers_list.tscn" id="8_3hiv4"]
+[ext_resource type="PackedScene" uid="uid://fmo8nhxqjycj" path="res://scenes/ui/navigate_to_menu_button.tscn" id="9_0kw1j"]
 
 [sub_resource type="Gradient" id="Gradient_131dc"]
 offsets = PackedFloat32Array(0.163347, 0.860558)
@@ -33,7 +34,7 @@ size = Vector2(2698, 480)
 [node name="PoolRoyale" type="Node2D"]
 script = ExtResource("1_x1ler")
 
-[node name="BG" type="TextureRect" parent="." groups=["Background"]]
+[node name="Background" type="TextureRect" parent="." groups=["Background"]]
 offset_left = -120.0
 offset_top = -32.0
 offset_right = 2032.0
@@ -220,9 +221,9 @@ remote_path = NodePath("../../../Bumper")
 
 [node name="Bumper" parent="MovingObject2" instance=ExtResource("3_x2hen")]
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="UI" type="CanvasLayer" parent="."]
 
-[node name="Waiting" type="Label" parent="CanvasLayer"]
+[node name="Waiting" type="Label" parent="UI"]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -240,7 +241,7 @@ text = "Waiting for players
 Type !join to play"
 horizontal_alignment = 1
 
-[node name="Winner" type="Label" parent="CanvasLayer"]
+[node name="Winner" type="Label" parent="UI"]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -257,7 +258,7 @@ theme_override_font_sizes/font_size = 61
 text = "Winner:"
 horizontal_alignment = 1
 
-[node name="Countdown" type="Label" parent="CanvasLayer"]
+[node name="Countdown" type="Label" parent="UI"]
 visible = false
 anchors_preset = 8
 anchor_left = 0.5
@@ -279,7 +280,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 script = ExtResource("4_ilfop")
 
-[node name="ColorRect" type="ColorRect" parent="CanvasLayer/Countdown"]
+[node name="ColorRect" type="ColorRect" parent="UI/Countdown"]
 self_modulate = Color(0.054902, 0.054902, 0.054902, 0.662745)
 show_behind_parent = true
 layout_mode = 0
@@ -288,47 +289,67 @@ offset_top = -527.0
 offset_right = 1667.0
 offset_bottom = 876.0
 
-[node name="WaitingList" type="VBoxContainer" parent="CanvasLayer"]
+[node name="WaitingList" type="VBoxContainer" parent="UI"]
 offset_left = 1612.0
 offset_top = 72.0
 offset_right = 1853.0
 offset_bottom = 1009.0
 
-[node name="Label" type="Label" parent="CanvasLayer/WaitingList"]
+[node name="Label" type="Label" parent="UI/WaitingList"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Waiting"
 horizontal_alignment = 2
 
-[node name="ViewersList" parent="CanvasLayer/WaitingList" instance=ExtResource("8_3hiv4")]
+[node name="ViewersList" parent="UI/WaitingList" instance=ExtResource("8_3hiv4")]
 layout_direction = 3
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 0.447059)
 theme_override_colors/guide_color = Color(0, 0, 0, 0)
+theme_override_colors/font_color = Color(1, 1, 1, 0.447059)
 theme_override_font_sizes/font_size = 16
 allow_search = false
 
-[node name="DeadList" type="VBoxContainer" parent="CanvasLayer"]
+[node name="DeadList" type="VBoxContainer" parent="UI"]
 offset_left = 68.0
 offset_top = 68.0
 offset_right = 309.0
 offset_bottom = 1005.0
 
-[node name="Label" type="Label" parent="CanvasLayer/DeadList"]
+[node name="Label" type="Label" parent="UI/DeadList"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Dead"
 
-[node name="ViewersList" parent="CanvasLayer/DeadList" instance=ExtResource("8_3hiv4")]
+[node name="ViewersList" parent="UI/DeadList" instance=ExtResource("8_3hiv4")]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 0.447059)
 theme_override_colors/guide_color = Color(0, 0, 0, 0)
+theme_override_colors/font_color = Color(1, 1, 1, 0.447059)
 theme_override_font_sizes/font_size = 16
 allow_search = false
 list_type = 2
 
+[node name="Overlay" type="MarginContainer" parent="UI"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/Overlay"]
+layout_mode = 2
+
+[node name="NavigateToMenuButton" parent="UI/Overlay/VBoxContainer" instance=ExtResource("9_0kw1j")]
+layout_mode = 2
+
 [connection signal="body_entered" from="DeathArea" to="." method="_on_death_area_body_entered"]
-[connection signal="finished" from="CanvasLayer/Countdown" to="." method="_on_countdown_finished"]
+[connection signal="finished" from="UI/Countdown" to="." method="_on_countdown_finished"]
+[connection signal="scene_changing" from="UI/Overlay/VBoxContainer/NavigateToMenuButton" to="." method="_on_navigate_to_menu_button_scene_changing"]
 
 [editable path="MovingObject"]
 [editable path="MovingObject2"]

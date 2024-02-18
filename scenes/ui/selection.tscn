@@ -1,20 +1,24 @@
-[gd_scene load_steps=5 format=3 uid="uid://bj80oc4in7k7n"]
+[gd_scene load_steps=8 format=3 uid="uid://bj80oc4in7k7n"]
 
 [ext_resource type="Script" path="res://scenes/ui/scripts/selection.gd" id="1_58emc"]
 [ext_resource type="PackedScene" uid="uid://hc88uh4mv3bl" path="res://scenes/ui/selection_button.tscn" id="1_b3pkf"]
+[ext_resource type="Texture2D" uid="uid://b27dgqubv3k4k" path="res://shared/third_party/twitch/twitch-brand-assets/Brand Assets/Logos/glitch/Purple/TwitchGlitchPurple.svg" id="2_y10lt"]
+[ext_resource type="Texture2D" uid="uid://o6opr1qnnwmp" path="res://shared/visuals/gear.svg" id="3_x06dg"]
+[ext_resource type="PackedScene" uid="uid://qfr61hbrdi4f" path="res://scenes/ui/loading/loading.tscn" id="4_arxaa"]
 
-[sub_resource type="Gradient" id="Gradient_e174d"]
+[sub_resource type="Gradient" id="Gradient_mmjqv"]
 offsets = PackedFloat32Array(0, 0.986486)
 colors = PackedColorArray(0.128906, 0.128906, 0.128906, 1, 0, 0, 0, 1)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_0j12g"]
-gradient = SubResource("Gradient_e174d")
+gradient = SubResource("Gradient_mmjqv")
 width = 1280
 height = 720
 fill_to = Vector2(1, 1)
 metadata/_snap_enabled = true
 
 [node name="Selection" type="Control"]
+texture_filter = 2
 clip_contents = true
 layout_mode = 3
 anchors_preset = 15
@@ -26,7 +30,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("1_58emc")
 
-[node name="TextureRect" type="TextureRect" parent="."]
+[node name="Background" type="TextureRect" parent="." groups=["Background"]]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -48,26 +52,52 @@ grow_vertical = 2
 [node name="VBoxContainer" type="VBoxContainer" parent="OuterMarginContainer"]
 layout_mode = 2
 
-[node name="StatusBar" type="MarginContainer" parent="OuterMarginContainer/VBoxContainer"]
+[node name="StatusBarContainer" type="MarginContainer" parent="OuterMarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 8
 theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 8
 
-[node name="HBoxContainer" type="HBoxContainer" parent="OuterMarginContainer/VBoxContainer/StatusBar"]
-layout_mode = 2
-
-[node name="StatusLabel" type="Label" parent="OuterMarginContainer/VBoxContainer/StatusBar/HBoxContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 20
-text = "Status:"
-
-[node name="StatusValue" type="Label" parent="OuterMarginContainer/VBoxContainer/StatusBar/HBoxContainer"]
+[node name="StatusBar" type="HBoxContainer" parent="OuterMarginContainer/VBoxContainer/StatusBarContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="OuterMarginContainer/VBoxContainer/StatusBarContainer/StatusBar"]
+layout_mode = 2
+texture = ExtResource("2_y10lt")
+expand_mode = 3
+
+[node name="ButtonReconnect" type="Button" parent="OuterMarginContainer/VBoxContainer/StatusBarContainer/StatusBar"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Reconnect or change channel"
+theme_override_font_sizes/font_size = 20
+text = "Twitch User"
+icon = ExtResource("2_y10lt")
+expand_icon = true
+
+[node name="StatusValue" type="Label" parent="OuterMarginContainer/VBoxContainer/StatusBarContainer/StatusBar"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
 text = "..."
+
+[node name="LabelConnectedAs" type="Label" parent="OuterMarginContainer/VBoxContainer/StatusBarContainer/StatusBar"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Connected as"
+
+[node name="ButtonOpenSettings" type="Button" parent="OuterMarginContainer/VBoxContainer/StatusBarContainer/StatusBar"]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+size_flags_vertical = 0
+icon = ExtResource("3_x06dg")
+icon_alignment = 1
+expand_icon = true
 
 [node name="CenterContainer" type="CenterContainer" parent="OuterMarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -106,18 +136,88 @@ theme_override_constants/margin_top = 32
 theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 8
 
-[node name="VersionBtn" type="LinkButton" parent="."]
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -150.0
-offset_top = -47.0
-offset_right = -17.0
-offset_bottom = -19.0
-grow_horizontal = 0
-grow_vertical = 0
+[node name="HBoxContainer" type="HBoxContainer" parent="OuterMarginContainer/VBoxContainer/BottomBar"]
+layout_mode = 2
+
+[node name="LabelCurrentVersion" type="Label" parent="OuterMarginContainer/VBoxContainer/BottomBar/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "vCurrent"
+
+[node name="Control" type="Control" parent="OuterMarginContainer/VBoxContainer/BottomBar/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ButtonVersion" type="LinkButton" parent="OuterMarginContainer/VBoxContainer/BottomBar/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Getting latest version.."
+
+[node name="LoadingModalContainer" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LoadingModal" parent="LoadingModalContainer" instance=ExtResource("4_arxaa")]
+unique_name_in_owner = true
+layout_mode = 2
+is_modal = true
+
+[node name="RestartModalContainer" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="TextureRect" parent="RestartModalContainer"]
+layout_mode = 2
+texture = SubResource("GradientTexture2D_0j12g")
+expand_mode = 3
+stretch_mode = 5
+
+[node name="CenterContainer" type="CenterContainer" parent="RestartModalContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="RestartModalContainer/CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 30
+
+[node name="LabelReconnected" type="Label" parent="RestartModalContainer/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(1024, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 50
+text = "Successfully reconnected to Twitch!"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="LabelPleaseRestart" type="Label" parent="RestartModalContainer/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(1024, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Please restart Godot Twitch Games to continue."
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="RestartModalContainer/CenterContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="ButtonShutdown" type="Button" parent="RestartModalContainer/CenterContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(192, 64)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Exit"
+
+[connection signal="pressed" from="OuterMarginContainer/VBoxContainer/StatusBarContainer/StatusBar/ButtonReconnect" to="." method="_on_button_reconnect_pressed"]
+[connection signal="pressed" from="OuterMarginContainer/VBoxContainer/StatusBarContainer/StatusBar/ButtonOpenSettings" to="." method="_on_button_open_settings_pressed"]
+[connection signal="pressed" from="RestartModalContainer/CenterContainer/VBoxContainer/HBoxContainer/ButtonShutdown" to="." method="_on_button_shutdown_pressed"]

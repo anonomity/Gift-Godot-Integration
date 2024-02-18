@@ -1,0 +1,47 @@
+# LANGUAGE translation for godot_twitch_games GiftSingleton
+#
+# Automatically generated, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: godot_twitch_games\n"
+"PO-Revision-Date: 2024-03-26\n"
+"Last-Translator: Pandacoder\n"
+"Language-Team: none\n"
+"Language: en-US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: GiftSingleton.STATUS.NONE
+msgid "GiftSingleton.STATUS.NONE"
+msgstr "None"
+
+#: GiftSingleton.STATUS.INIT
+msgid "GiftSingleton.STATUS.INIT"
+msgstr "Initializing..."
+
+#: GiftSingleton.STATUS.AUTH_START
+msgid "GiftSingleton.STATUS.AUTH_START"
+msgstr "Authenticating..."
+
+#: GiftSingleton.STATUS.AUTH_FILE_NOT_FOUND
+msgid "GiftSingleton.STATUS.AUTH_FILE_NOT_FOUND"
+msgstr "Missing developer integration configuration!"
+
+#: GiftSingleton.STATUS.CONNECTION_FAILED
+msgid "GiftSingleton.STATUS.CONNECTION_FAILED"
+msgstr "Failed to connect to Twitch"
+
+#: GiftSingleton.STATUS.CONNECTING
+msgid "GiftSingleton.STATUS.CONNECTING"
+msgstr "Connecting..."
+
+#: GiftSingleton.STATUS.CONNECTED
+msgid "GiftSingleton.STATUS.CONNECTED"
+msgstr "Connected"
+
+#: GiftSingleton.STATUS.DISCONNECTED
+msgid "GiftSingleton.STATUS.DISCONNECTED"
+msgstr "Disconnected"

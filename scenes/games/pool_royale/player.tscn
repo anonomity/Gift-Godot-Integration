@@ -31,10 +31,10 @@ collision_layer = 3
 collision_mask = 3
 physics_material_override = SubResource("PhysicsMaterial_v2wev")
 gravity_scale = 0.0
-continuous_cd = 2
-max_contacts_reported = 3
-contact_monitor = true
 can_sleep = false
+continuous_cd = 2
+contact_monitor = true
+max_contacts_reported = 3
 linear_damp = 1.05
 script = ExtResource("1_0j7s7")
 

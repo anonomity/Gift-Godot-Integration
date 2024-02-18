@@ -11,10 +11,10 @@ config_version=5
 [application]
 
 config/name="godot_twitch_games"
-run/main_scene="res://scenes/ui/selection.tscn"
-config/features=PackedStringArray("4.1", "Forward Plus")
+config/version="0.0.7"
+run/main_scene="res://scenes/boot.tscn"
+config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://icon.png"
-config/version="0.0.6"
 
 [autoload]
 
@@ -25,6 +25,8 @@ Transition="*res://autoload/transition.tscn"
 AdminWindow="*res://autoload/admin_window.tscn"
 SceneSwitcher="*res://autoload/scene_switcher.gd"
 GameConfigManager="*res://autoload/game_config_manager.gd"
+GamePreferencesHelper="*res://autoload/game_preferences_helper.gd"
+WindowConfigureChannelPoints="*res://autoload/window_settings.tscn"
 
 [display]
 
@@ -34,7 +36,7 @@ window/size/transparent=true
 window/size/window_width_override=1280
 window/size/window_height_override=720
 window/subwindows/embed_subwindows=false
-window/stretch/mode="viewport"
+window/stretch/mode="canvas_items"
 window/per_pixel_transparency/allowed=true
 
 [editor_plugins]
@@ -49,20 +51,46 @@ import/blender/enabled=false
 
 admin={
 "deadzone": 0.5,
-"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":96,"key_label":0,"unicode":178,"echo":false,"script":null)
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":96,"key_label":0,"unicode":178,"location":0,"echo":false,"script":null)
 ]
 }
 enter={
 "deadzone": 0.5,
-"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194309,"key_label":0,"unicode":0,"echo":false,"script":null)
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194309,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
 ]
 }
 transparent={
 "deadzone": 0.5,
-"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194332,"key_label":0,"unicode":0,"echo":false,"script":null)
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194332,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
 ]
 }
+test={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194335,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+toggle_ui={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194333,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+
+[internationalization]
+
+locale/translations=PackedStringArray("res://scenes/ui/menu_selection/menu_selection.en-US.po", "res://i18n/gift/gift.en-US.po")
+locale/translations_pot_files=PackedStringArray("res://scenes/ui/selection.tscn", "res://scenes/ui/scripts/selection.gd")
+
+[layer_names]
+
+2d_physics/layer_2="Player"
+2d_physics/layer_3="Floor"
 
 [physics]
 
 2d/physics_engine="Box2D"
+
+[rendering]
+
+textures/canvas_textures/default_texture_filter=0
+environment/defaults/default_clear_color=Color(0.0367763, 1, 0, 1)
+anti_aliasing/quality/msaa_2d=1

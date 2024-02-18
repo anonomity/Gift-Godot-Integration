@@ -1,23 +1,44 @@
-[gd_scene load_steps=2 format=3 uid="uid://ckx4fpsndvy62"]
+[gd_scene load_steps=3 format=3 uid="uid://ckx4fpsndvy62"]
 
 [ext_resource type="Script" path="res://scenes/games/numbermind/scripts/numbermind.gd" id="1_66q02"]
+[ext_resource type="PackedScene" uid="uid://fmo8nhxqjycj" path="res://scenes/ui/navigate_to_menu_button.tscn" id="2_w0rx1"]
 
 [node name="numbermind" type="Node2D"]
 script = ExtResource("1_66q02")
 
-[node name="Results" type="RichTextLabel" parent="."]
-offset_left = 24.0
-offset_top = 80.0
-offset_right = 1024.0
-offset_bottom = 1056.0
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Overlay" type="MarginContainer" parent="UI"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/Overlay"]
+layout_mode = 2
+
+[node name="NavigateToMenuButton" parent="UI/Overlay/VBoxContainer" instance=ExtResource("2_w0rx1")]
+layout_mode = 2
+
+[node name="Instructions" type="Label" parent="UI/Overlay/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+
+[node name="Results" type="RichTextLabel" parent="UI/Overlay/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
 theme_override_font_sizes/normal_font_size = 32
 theme_override_font_sizes/bold_font_size = 32
 bbcode_enabled = true
 tab_size = 24
 
-[node name="Instructions" type="Label" parent="."]
-offset_left = 24.0
-offset_top = 24.0
-offset_right = 64.0
-offset_bottom = 47.0
-theme_override_font_sizes/font_size = 24
+[connection signal="scene_changing" from="UI/Overlay/VBoxContainer/NavigateToMenuButton" to="." method="_on_navigate_to_menu_button_scene_changing"]

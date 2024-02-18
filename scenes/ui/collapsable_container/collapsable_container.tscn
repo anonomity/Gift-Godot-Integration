@@ -1,0 +1,49 @@
+[gd_scene load_steps=4 format=3 uid="uid://cw5h2g1vjx36k"]
+
+[ext_resource type="Script" path="res://scenes/ui/collapsable_container/collapsable_container.gd" id="1_wwwh2"]
+[ext_resource type="Texture2D" uid="uid://dl8gsnjm7k6l" path="res://scenes/ui/collapsable_container/collapse-expand.svg" id="2_sxljw"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5f3jg"]
+bg_color = Color(0.15, 0.15, 0.15, 1)
+
+[node name="CollapsableContainer" type="VBoxContainer"]
+size_flags_horizontal = 3
+script = ExtResource("1_wwwh2")
+
+[node name="Titlebar" type="PanelContainer" parent="."]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_5f3jg")
+
+[node name="Margin" type="MarginContainer" parent="Titlebar"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="TitlebarItems" type="HBoxContainer" parent="Titlebar/Margin"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="Titlebar/Margin/TitlebarItems"]
+texture_filter = 2
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+text = "Collapsable Container"
+
+[node name="CollapseRegion" type="Control" parent="Titlebar/Margin/TitlebarItems"]
+custom_minimum_size = Vector2(20, 0)
+layout_mode = 2
+
+[node name="Trigger" type="TextureButton" parent="Titlebar/Margin/TitlebarItems/CollapseRegion"]
+layout_mode = 0
+offset_top = 1.5
+offset_right = 20.0
+offset_bottom = 21.5
+rotation = 1.5708
+pivot_offset = Vector2(10, 10)
+texture_normal = ExtResource("2_sxljw")
+ignore_texture_size = true
+stretch_mode = 0
+
+[connection signal="gui_input" from="Titlebar" to="." method="_on_titlebar_gui_input"]

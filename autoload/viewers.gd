@@ -160,7 +160,7 @@ func reset() -> void:
 
 
 ## add viewer to the active list
-func add(viewer_name: String) -> void:
+func add(viewer_name: String, color: String) -> void:
 	if closed:
 		return
 
@@ -283,11 +283,11 @@ func _on_viewer_left_chat(sender_data: SenderData) -> void:
 
 
 ## viewer joined the game - add to the active/waiting list
-func _on_viewer_joined(viewer_name: String) -> void:
+func _on_viewer_joined(viewer_name: String, color: String) -> void:
 	if is_joined(viewer_name):
 		return
 
-	add(viewer_name)
+	add(viewer_name, color)
 
 
 ## reset all viewers
@@ -326,18 +326,18 @@ func _test() -> void:
 	open()
 	test_viewer_lists(0, 0, 0)
 
-	add("viewer1")
+	add("viewer1", "")
 	test_viewer_lists(1, 0, 0)
 
-	add("viewer2")
-	add("viewer3")
+	add("viewer2", "")
+	add("viewer3", "")
 	test_viewer_lists(3, 0, 0)
 
 	remove("viewer1")
 	test_viewer_lists(2, 0, 0)
 
 	lock_active()
-	add("viewer4")
+	add("viewer4", "")
 	test_viewer_lists(2, 1, 0)
 
 	unlock_active()
@@ -356,12 +356,12 @@ func _test() -> void:
 	reset()
 	test_viewer_lists(0, 0, 0)
 
-	add("viewer1")
+	add("viewer1", "")
 	dead("viewer1")
 	test_viewer_lists(0, 0, 1)
 
-	add("viewer6")
-	add("viewer7")
+	add("viewer6", "")
+	add("viewer7", "")
 	dead("viewer7")
 	assert(get_last_active_viewer() == "viewer6")
 

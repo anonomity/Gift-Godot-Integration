@@ -1,8 +1,10 @@
+class_name CannonGameBullet
 extends RigidBody2D
 
 @export var blood_particles: PackedScene = preload("res://scenes/games/pool_royale/blood_particles.tscn")
 
 var viewer_name: String
+var metadata: Dictionary
 
 @onready var name_lbl: Label = $Name
 @onready var label_offset: Vector2
@@ -11,7 +13,10 @@ var viewer_name: String
 
 func _ready():
 	label_offset = name_lbl.position
-	var color: Color = Color.from_hsv(randf_range(0.0, 1.0), 1.0, 1.0, 1.0)
+	var color: Color = Color.from_string(
+		metadata.get("color", ""),
+		Color.from_hsv(randf_range(0.0, 1.0), 1.0, 1.0, 1.0)
+	)
 	sprite_2d.modulate = color
 	trail_2d.modulate = color
 	name_lbl.set("theme_override_colors/font_color", color)

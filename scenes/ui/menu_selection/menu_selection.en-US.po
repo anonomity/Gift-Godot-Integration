@@ -1,0 +1,52 @@
+# LANGUAGE translation for godot_twitch_games for the following files:
+# res://scenes/ui/selection.tscn
+#
+# Automatically generated, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: godot_twitch_games\n"
+"PO-Revision-Date: 2024-03-26\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: en-US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: scenes/ui/selection.tscn
+msgid "Status:"
+msgstr "Status:"
+
+#: scenes/ui/selection.tscn
+msgid "..."
+msgstr "..."
+
+#: scenes/ui/selection.tscn
+msgid "Connected as"
+msgstr "Connected as"
+
+#: scenes/ui/selection.tscn
+msgid "Reconnect or change channel"
+msgstr "Reconnect or change channel"
+
+#: scenes/ui/selection.tscn
+msgid "Twitch User"
+msgstr "Twitch User"
+
+#: scenes/ui/selection.tscn
+msgid "Getting latest version.."
+msgstr "Getting latest version.."
+
+#: scenes/ui/selection.tscn
+msgid "Successfully reconnected to Twitch!"
+msgstr "Successfully reconnected to Twitch!"
+
+#: scenes/ui/selection.tscn
+msgid "Please restart Godot Twitch Games to continue."
+msgstr "Please restart Godot Twitch Games to continue."
+
+#: scenes/ui/selection.tscn
+msgid "Exit"
+msgstr "Exit"

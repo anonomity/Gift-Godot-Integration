@@ -1,7 +1,22 @@
 # Godot 4+ specific ignores
 .godot
+app-config.json
 auth.txt
 config.cfg
 build/*
 !release.py
 !release_local.py
+
+# Imported translations (automatically generated from CSV files)
+*.translation
+configuration.md
+
+# Mono-specific ignores
+.mono/
+data_*/
+
+# VSCode
+.vscode/settings.json
+
+# Temporary Files
+*.tmp

@@ -1,0 +1,33 @@
+[gd_scene load_steps=3 format=3 uid="uid://dno4lcxs0na3i"]
+
+[ext_resource type="Script" path="res://scenes/ui/leaderboard/LeaderboardEntry.gd" id="1_ws1r5"]
+[ext_resource type="StyleBox" uid="uid://014go7dxkpfe" path="res://scenes/ui/leaderboard/leaderboard_entry_vseparator_style.tres" id="2_eacpr"]
+
+[node name="LeaderboardEntry" type="HBoxContainer"]
+script = ExtResource("1_ws1r5")
+
+[node name="Number" type="Label" parent="."]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+text = "1"
+horizontal_alignment = 2
+
+[node name="VSeparator" type="VSeparator" parent="."]
+layout_mode = 2
+theme_override_styles/separator = ExtResource("2_eacpr")
+
+[node name="Name" type="Label" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Name
+"
+
+[node name="VSeparator2" type="VSeparator" parent="."]
+layout_mode = 2
+theme_override_styles/separator = ExtResource("2_eacpr")
+
+[node name="Points" type="Label" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "7777777"
+horizontal_alignment = 2

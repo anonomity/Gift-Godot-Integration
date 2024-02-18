@@ -25,16 +25,17 @@ func new_version_available(project_version: String, latest_version: String) -> b
 
 func on_request_completed(result, response_code, headers, body) -> void:
 	var json = JSON.parse_string(body.get_string_from_utf8())
-	
+
 	# Remove the "v" for comparison
-	var release_version: String = json["tag_name"].replace("v", "")
-	
+	var release_version = (json.get("tag_name", "") as String).trim_prefix("v")
+	var current_version: String = ProjectSettings.get_setting("application/config/version")
+
 	latest_release = {
 		"version": json["tag_name"],
 		"url": json["html_url"],
-		"new": new_version_available(ProjectSettings.get_setting("application/config/version"), release_version)
+		"new": new_version_available(current_version, release_version)
 	}
-	
+
 	release_parsed.emit(latest_release)
 
 func test_version_comparison() -> void:

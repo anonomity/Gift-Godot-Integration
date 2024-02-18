@@ -1,0 +1,5 @@
+[gd_scene load_steps=2 format=3 uid="uid://chfb6eclxernd"]
+
+[ext_resource type="PackedScene" uid="uid://rs8thwr8kuki" path="res://scenes/ui/windows/window_settings/window_settings.tscn" id="1_6ut3o"]
+
+[node name="WindowSettings" instance=ExtResource("1_6ut3o")]

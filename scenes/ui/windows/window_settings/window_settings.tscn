@@ -1,0 +1,337 @@
+[gd_scene load_steps=10 format=3 uid="uid://rs8thwr8kuki"]
+
+[ext_resource type="Script" path="res://scenes/ui/windows/window_settings/window_settings.gd" id="1_e1fx1"]
+[ext_resource type="Texture2D" uid="uid://dgefas08ktcyc" path="res://icon.png" id="2_n7wuy"]
+[ext_resource type="Script" path="res://scenes/ui/windows/window_settings/settings_channel_points_rewards.gd" id="2_u1vxx"]
+[ext_resource type="Script" path="res://scenes/ui/windows/window_settings/settings_actions.gd" id="4_jlr7u"]
+
+[sub_resource type="Gradient" id="Gradient_mmjqv"]
+offsets = PackedFloat32Array(0, 0.986486)
+colors = PackedColorArray(0.128906, 0.128906, 0.128906, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_apsnc"]
+gradient = SubResource("Gradient_mmjqv")
+width = 1280
+height = 720
+fill_to = Vector2(1, 1)
+metadata/_snap_enabled = true
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_i0x3s"]
+bg_color = Color(0.2, 0.2, 0.2, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="Gradient" id="Gradient_mbgh1"]
+colors = PackedColorArray(0, 0.6, 0.807843, 1, 0.788235, 0.870588, 1, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_vw3na"]
+gradient = SubResource("Gradient_mbgh1")
+width = 112
+height = 112
+fill = 1
+fill_from = Vector2(0.5, 1)
+metadata/_snap_enabled = true
+
+[node name="WindowSettings" type="Window"]
+disable_3d = true
+msaa_2d = 1
+title = "Channel Points Rewards"
+initial_position = 4
+size = Vector2i(1280, 720)
+script = ExtResource("1_e1fx1")
+
+[node name="Background" type="TextureRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("GradientTexture2D_apsnc")
+expand_mode = 3
+stretch_mode = 5
+
+[node name="Tabs" type="TabContainer" parent="."]
+unique_name_in_owner = true
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 1272.0
+offset_bottom = 712.0
+current_tab = 1
+
+[node name="Channel Points Rewards" type="MarginContainer" parent="Tabs"]
+visible = false
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+script = ExtResource("2_u1vxx")
+metadata/_tab_index = 0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Tabs/Channel Points Rewards"]
+layout_mode = 2
+
+[node name="ListContainer" type="VBoxContainer" parent="Tabs/Channel Points Rewards/HBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Tabs/Channel Points Rewards/HBoxContainer/ListContainer"]
+layout_mode = 2
+
+[node name="ButtonAddReward" type="Button" parent="Tabs/Channel Points Rewards/HBoxContainer/ListContainer/HBoxContainer"]
+visible = false
+layout_mode = 2
+text = "Add Reward"
+
+[node name="ButtonRefreshRewardsList" type="Button" parent="Tabs/Channel Points Rewards/HBoxContainer/ListContainer/HBoxContainer"]
+layout_mode = 2
+text = "Refresh"
+
+[node name="RewardsList" type="ItemList" parent="Tabs/Channel Points Rewards/HBoxContainer/ListContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
+size_flags_vertical = 3
+item_count = 3
+fixed_icon_size = Vector2i(28, 28)
+item_0/text = "Test"
+item_0/icon = ExtResource("2_n7wuy")
+item_1/text = "Test 2"
+item_2/text = "Test 3"
+
+[node name="FieldsPanelContainer" type="PanelContainer" parent="Tabs/Channel Points Rewards/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="FieldsContainer" type="VBoxContainer" parent="Tabs/Channel Points Rewards/HBoxContainer/FieldsPanelContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Tabs/Channel Points Rewards/HBoxContainer/FieldsPanelContainer/FieldsContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="IconPanel" type="Panel" parent="Tabs/Channel Points Rewards/HBoxContainer/FieldsPanelContainer/FieldsContainer/HBoxContainer"]
+unique_name_in_owner = true
+clip_contents = true
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_i0x3s")
+
+[node name="MarginContainer" type="MarginContainer" parent="Tabs/Channel Points Rewards/HBoxContainer/FieldsPanelContainer/FieldsContainer/HBoxContainer/IconPanel"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="Icon4x" type="TextureRect" parent="Tabs/Channel Points Rewards/HBoxContainer/FieldsPanelContainer/FieldsContainer/HBoxContainer/IconPanel/MarginContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(112, 112)
+layout_mode = 2
+texture = SubResource("GradientTexture2D_vw3na")
+
+[node name="MarginContainer" type="MarginContainer" parent="Tabs/Channel Points Rewards/HBoxContainer/FieldsPanelContainer/FieldsContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Tabs/Channel Points Rewards/HBoxContainer/FieldsPanelContainer/FieldsContainer/HBoxContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Tabs/Channel Points Rewards/HBoxContainer/FieldsPanelContainer/FieldsContainer/HBoxContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_right = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Tabs/Channel Points Rewards/HBoxContainer/FieldsPanelContainer/FieldsContainer/HBoxContainer/MarginContainer/HBoxContainer/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="Title" type="LineEdit" parent="Tabs/Channel Points Rewards/HBoxContainer/FieldsPanelContainer/FieldsContainer/HBoxContainer/MarginContainer/HBoxContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Test"
+placeholder_text = "The user-visible title of the reward"
+editable = false
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Tabs/Channel Points Rewards/HBoxContainer/FieldsPanelContainer/FieldsContainer/HBoxContainer/MarginContainer/HBoxContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Cost" type="SpinBox" parent="Tabs/Channel Points Rewards/HBoxContainer/FieldsPanelContainer/FieldsContainer/HBoxContainer/MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+editable = false
+
+[node name="LabelCost" type="Label" parent="Tabs/Channel Points Rewards/HBoxContainer/FieldsPanelContainer/FieldsContainer/HBoxContainer/MarginContainer/HBoxContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "channel points"
+
+[node name="MarginContainer2" type="MarginContainer" parent="Tabs/Channel Points Rewards/HBoxContainer/FieldsPanelContainer/FieldsContainer/HBoxContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Tabs/Channel Points Rewards/HBoxContainer/FieldsPanelContainer/FieldsContainer/HBoxContainer/MarginContainer/HBoxContainer/MarginContainer2"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Tabs/Channel Points Rewards/HBoxContainer/FieldsPanelContainer/FieldsContainer/HBoxContainer/MarginContainer/HBoxContainer/MarginContainer2/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Tabs/Channel Points Rewards/HBoxContainer/FieldsPanelContainer/FieldsContainer/HBoxContainer/MarginContainer/HBoxContainer/MarginContainer2/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Map to Action"
+
+[node name="ButtonClearActions" type="Button" parent="Tabs/Channel Points Rewards/HBoxContainer/FieldsPanelContainer/FieldsContainer/HBoxContainer/MarginContainer/HBoxContainer/MarginContainer2/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Clear"
+
+[node name="ActionsList" type="ItemList" parent="Tabs/Channel Points Rewards/HBoxContainer/FieldsPanelContainer/FieldsContainer/HBoxContainer/MarginContainer/HBoxContainer/MarginContainer2/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(320, 0)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 3
+item_count = 26
+item_0/text = "test"
+item_1/text = "a"
+item_2/text = "t"
+item_3/text = "2"
+item_4/text = "a"
+item_5/text = "a"
+item_6/text = "2"
+item_7/text = "3"
+item_8/text = "4"
+item_9/text = "5"
+item_10/text = "6"
+item_11/text = "7"
+item_12/text = "8"
+item_13/text = "9"
+item_14/text = "10"
+item_15/text = "11"
+item_16/text = "12"
+item_17/text = "13"
+item_18/text = "14"
+item_19/text = "15"
+item_20/text = "16"
+item_21/text = "17"
+item_22/text = "18"
+item_23/text = "19"
+item_24/text = "20"
+item_25/text = "21"
+
+[node name="Actions" type="MarginContainer" parent="Tabs"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+script = ExtResource("4_jlr7u")
+metadata/_tab_index = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Tabs/Actions"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Tabs/Actions/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_right = 8
+
+[node name="PanelContainer2" type="PanelContainer" parent="Tabs/Actions/HBoxContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="MarginContainer2" type="MarginContainer" parent="Tabs/Actions/HBoxContainer/MarginContainer/PanelContainer2"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Tabs/Actions/HBoxContainer/MarginContainer/PanelContainer2/MarginContainer2"]
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="Tabs/Actions/HBoxContainer/MarginContainer/PanelContainer2/MarginContainer2/VBoxContainer"]
+layout_mode = 2
+text = "Built-in Actions"
+
+[node name="ListBuiltinActions" type="ItemList" parent="Tabs/Actions/HBoxContainer/MarginContainer/PanelContainer2/MarginContainer2/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="Tabs/Actions/HBoxContainer/MarginContainer/PanelContainer2/MarginContainer2/VBoxContainer"]
+layout_mode = 2
+text = "Custom Actions"
+
+[node name="ListCustomActions" type="ItemList" parent="Tabs/Actions/HBoxContainer/MarginContainer/PanelContainer2/MarginContainer2/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PanelContainer" type="PanelContainer" parent="Tabs/Actions/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MarginContainer2" type="MarginContainer" parent="Tabs/Actions/HBoxContainer/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="ActionProperties" type="GridContainer" parent="Tabs/Actions/HBoxContainer/PanelContainer/MarginContainer2"]
+layout_mode = 2
+columns = 2
+
+[node name="LabelActionId" type="Label" parent="Tabs/Actions/HBoxContainer/PanelContainer/MarginContainer2/ActionProperties"]
+layout_mode = 2
+text = "ID"
+horizontal_alignment = 2
+
+[node name="ActionId" type="Label" parent="Tabs/Actions/HBoxContainer/PanelContainer/MarginContainer2/ActionProperties"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.75, 0.75, 1)
+text = "ACTION_ID"
+
+[node name="LabelActionName" type="Label" parent="Tabs/Actions/HBoxContainer/PanelContainer/MarginContainer2/ActionProperties"]
+layout_mode = 2
+text = "Name"
+horizontal_alignment = 2
+
+[node name="ActionName" type="LineEdit" parent="Tabs/Actions/HBoxContainer/PanelContainer/MarginContainer2/ActionProperties"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
+placeholder_text = "Descriptive action name"
+
+[node name="Label3" type="Label" parent="Tabs/Actions/HBoxContainer/PanelContainer/MarginContainer2/ActionProperties"]
+layout_mode = 2
+horizontal_alignment = 2
+
+[node name="Label4" type="Label" parent="Tabs/Actions/HBoxContainer/PanelContainer/MarginContainer2/ActionProperties"]
+layout_mode = 2
+horizontal_alignment = 2
+
+[node name="Label5" type="Label" parent="Tabs/Actions/HBoxContainer/PanelContainer/MarginContainer2/ActionProperties"]
+layout_mode = 2
+horizontal_alignment = 2
+
+[node name="Label6" type="Label" parent="Tabs/Actions/HBoxContainer/PanelContainer/MarginContainer2/ActionProperties"]
+layout_mode = 2
+horizontal_alignment = 2
+
+[connection signal="close_requested" from="." to="." method="_on_close_requested"]
+[connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
+[connection signal="tab_changed" from="Tabs" to="." method="_on_configuration_tabs_tab_changed"]
+[connection signal="pressed" from="Tabs/Channel Points Rewards/HBoxContainer/ListContainer/HBoxContainer/ButtonRefreshRewardsList" to="Tabs/Channel Points Rewards" method="_on_button_refresh_rewards_list_pressed"]
+[connection signal="item_selected" from="Tabs/Channel Points Rewards/HBoxContainer/ListContainer/RewardsList" to="Tabs/Channel Points Rewards" method="_on_rewards_list_item_selected"]
+[connection signal="pressed" from="Tabs/Channel Points Rewards/HBoxContainer/FieldsPanelContainer/FieldsContainer/HBoxContainer/MarginContainer/HBoxContainer/MarginContainer2/VBoxContainer/HBoxContainer/ButtonClearActions" to="Tabs/Channel Points Rewards" method="_on_button_clear_actions_pressed"]
+[connection signal="item_selected" from="Tabs/Channel Points Rewards/HBoxContainer/FieldsPanelContainer/FieldsContainer/HBoxContainer/MarginContainer/HBoxContainer/MarginContainer2/VBoxContainer/ActionsList" to="Tabs/Channel Points Rewards" method="_on_actions_list_item_selected"]

@@ -1,0 +1,117 @@
+[gd_scene load_steps=6 format=3 uid="uid://qfr61hbrdi4f"]
+
+[ext_resource type="Texture2D" uid="uid://dgefas08ktcyc" path="res://icon.png" id="1_cwf1u"]
+[ext_resource type="Script" path="res://scenes/ui/loading/loading.gd" id="1_vloev"]
+[ext_resource type="PackedScene" uid="uid://dps8isvbb0api" path="res://scenes/ui/spinners/pill_spinner.tscn" id="2_5i4q6"]
+
+[sub_resource type="Gradient" id="Gradient_mmjqv"]
+offsets = PackedFloat32Array(0, 0.986486)
+colors = PackedColorArray(0.128906, 0.128906, 0.128906, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_0j12g"]
+gradient = SubResource("Gradient_mmjqv")
+width = 1280
+height = 720
+fill_to = Vector2(1, 1)
+metadata/_snap_enabled = true
+
+[node name="LoadingScreen" type="Control"]
+texture_filter = 2
+clip_contents = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_vloev")
+
+[node name="Background" type="TextureRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("GradientTexture2D_0j12g")
+expand_mode = 3
+stretch_mode = 5
+
+[node name="OuterMarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="OuterMarginContainer"]
+layout_mode = 2
+
+[node name="CenterContainer" type="CenterContainer" parent="OuterMarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="OuterMarginContainer/VBoxContainer/CenterContainer"]
+layout_mode = 2
+
+[node name="TextureLogo" type="TextureRect" parent="OuterMarginContainer/VBoxContainer/CenterContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("1_cwf1u")
+stretch_mode = 5
+
+[node name="Control" type="Control" parent="OuterMarginContainer/VBoxContainer/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+
+[node name="LabelAppTitle" type="Label" parent="OuterMarginContainer/VBoxContainer/CenterContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 56
+text = "Godot Twitch Games"
+horizontal_alignment = 1
+
+[node name="Control2" type="Control" parent="OuterMarginContainer/VBoxContainer/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+
+[node name="PillSpinner" parent="OuterMarginContainer/VBoxContainer/CenterContainer/VBoxContainer" instance=ExtResource("2_5i4q6")]
+layout_mode = 2
+pill_count = 8
+pill_length = 16.0
+pill_width = 16.0
+
+[node name="Control3" type="Control" parent="OuterMarginContainer/VBoxContainer/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="OuterMarginContainer/VBoxContainer/CenterContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="LabelStatus" type="Label" parent="OuterMarginContainer/VBoxContainer/CenterContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Loading"
+horizontal_alignment = 1
+
+[node name="EllipsisContainer" type="Control" parent="OuterMarginContainer/VBoxContainer/CenterContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="LabelEllipsis" type="Label" parent="OuterMarginContainer/VBoxContainer/CenterContainer/VBoxContainer/HBoxContainer/EllipsisContainer"]
+unique_name_in_owner = true
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+offset_right = 27.0
+offset_bottom = 45.0
+theme_override_font_sizes/font_size = 32
+text = "..."
+
+[node name="HBoxContainer" type="HBoxContainer" parent="OuterMarginContainer/VBoxContainer/CenterContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2

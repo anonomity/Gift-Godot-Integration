@@ -1,0 +1,3 @@
+Twitch assets are owned by Twitch and are not covered by any other licenses in this project.
+
+Branding assets acquired from https://brand.twitch.tv/

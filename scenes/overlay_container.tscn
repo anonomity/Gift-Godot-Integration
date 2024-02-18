@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=3 uid="uid://bnfi4620ri6gc"]
+
+[ext_resource type="Script" path="res://scenes/overlay_container.gd" id="1_gry03"]
+
+[node name="OverlayCanvas" type="CanvasLayer"]
+
+[node name="OverlayContainer" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_gry03")
+
+[connection signal="child_entered_tree" from="OverlayContainer" to="OverlayContainer" method="_on_child_entered_tree"]
+[connection signal="child_exiting_tree" from="OverlayContainer" to="OverlayContainer" method="_on_child_exiting_tree"]

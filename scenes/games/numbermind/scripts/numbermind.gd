@@ -1,7 +1,8 @@
 extends Node2D
 
-@onready var results = $Results
-@onready var instructions = $Instructions
+@onready var results = %Results
+@onready var instructions = %Instructions
+@onready var node_ui = $UI
 
 var secret: String
 var length: int = 4
@@ -10,9 +11,9 @@ var active: bool = false
 func _ready():
 	GameConfigManager.load_config()
 
-	GiftSingleton.add_game_command("guess", on_guess_made, 1, 1)
+	SignalBus.ui_visibility_toggled.connect(_on_ui_visibility_toggled)
 
-	SignalBus.transparency_toggled.connect(on_transparency_toggled)
+	GiftSingleton.add_game_command("guess", on_guess_made, 1, 1)
 
 	reset()
 	Transition.hide_transition()
@@ -21,10 +22,6 @@ func _process(delta: float) -> void:
 	if Input.is_action_just_pressed("ui_cancel"):
 		GameConfigManager.save_config()
 		SceneSwitcher.change_scene_to(SceneSwitcher.selection_scene, true, null)
-
-	#TODO: Move to a global shortcut script and/or to command window
-	if Input.is_action_just_pressed("transparent"):
-		SignalBus.emit_transparency_toggled(not get_viewport().transparent_bg)
 
 func reset():
 	secret = ""
@@ -68,7 +65,11 @@ func run_guess(viewer: String, guess: String) -> void:
 func on_guess_made(cmd_info: CommandInfo, args : PackedStringArray) -> void:
 	run_guess(cmd_info.sender_data.tags["display-name"], args[0])
 
-func on_transparency_toggled(transparent: bool) -> void:
-	for node in get_tree().get_nodes_in_group("Background"):
-		node.visible = not transparent
-		get_viewport().transparent_bg = transparent
+func _on_navigate_to_menu_button_scene_changing():
+	print("Leaving %s scene with %d viewers" % [
+		get_tree().current_scene.scene_file_path.get_file().get_basename(),
+		GiftSingleton.active_viewers.size()
+	])
+
+func _on_ui_visibility_toggled(ui_visible: bool):
+	node_ui.visible = ui_visible
