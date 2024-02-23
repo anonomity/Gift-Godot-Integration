@@ -1,9 +1,10 @@
-[gd_scene load_steps=8 format=3 uid="uid://brmp2rdcb3u7j"]
+[gd_scene load_steps=9 format=3 uid="uid://brmp2rdcb3u7j"]
 
 [ext_resource type="Script" path="res://scenes/games/Jackie_Codes_Game/Jackie_Game.gd" id="1_r2q44"]
 [ext_resource type="Script" path="res://scenes/games/Jackie_Codes_Game/scripts/Debug.gd" id="2_8d6am"]
 [ext_resource type="Texture2D" uid="uid://hn5dupehdntl" path="res://scenes/games/Jackie_Codes_Game/assets/gulag_priosn.png" id="3_t8pet"]
 [ext_resource type="Texture2D" uid="uid://trpivknmsptd" path="res://scenes/games/Jackie_Codes_Game/assets/tileset.png" id="4_1h4ci"]
+[ext_resource type="PackedScene" uid="uid://fmo8nhxqjycj" path="res://scenes/ui/navigate_to_menu_button.tscn" id="5_3nmcv"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_s8ixc"]
 texture = ExtResource("4_1h4ci")
@@ -185,6 +186,20 @@ text = "Santa Hat"
 [node name="Button2" type="Button" parent="Debug/Control/PanelContainer/VBoxContainer"]
 layout_mode = 2
 text = "prison"
+
+[node name="MarginContainer" type="MarginContainer" parent="Debug"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="NavigateToMenuButton" parent="Debug/MarginContainer" instance=ExtResource("5_3nmcv")]
+layout_mode = 2
 
 [connection signal="text_changed" from="Debug/Control/PanelContainer/VBoxContainer/LineEdit" to="Debug" method="_on_line_edit_text_changed"]
 [connection signal="pressed" from="Debug/Control/PanelContainer/VBoxContainer/Button" to="Debug" method="_on_button_pressed"]
