@@ -25,10 +25,10 @@ var game_commands: Array = []
 
 var setup_scene: PackedScene = preload("res://scenes/ui/setup.tscn")
 
+var active_viewers: Array[String] = []
 
 func _ready() -> void:
 	start()
-
 
 ## register a game command
 func add_game_command(command: String, command_callback: Callable, max_args: int = 0, min_args: int = 0, permission: PermissionFlag = PermissionFlag.EVERYONE) -> void:
@@ -41,6 +41,11 @@ func remove_game_commands() -> void:
 	for command in game_commands:
 		purge_command(command)
 	game_commands.clear()
+
+## set active viewers
+func set_active_viewers(viewers: Array[String]) -> void:
+	active_viewers.clear()
+	active_viewers.append_array(viewers)
 
 ##
 ## private

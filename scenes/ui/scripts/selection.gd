@@ -1,4 +1,4 @@
-extends Control
+class_name SelectionMenu extends Control
 
 @onready var button_container = %ButtonContainer
 @onready var status_value: Label = %StatusValue
@@ -53,6 +53,7 @@ func on_btn_pressed(scene: PackedScene) -> void:
 
 	Transition.show_transition()
 	await Transition.done
+
 	get_tree().change_scene_to_packed(scene)
 
 func on_status_changed(status_id: int) -> void:

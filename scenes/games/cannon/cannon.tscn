@@ -520,3 +520,4 @@ text = "Type !join to play!"
 
 [connection signal="body_entered" from="Target" to="." method="_on_target_body_entered"]
 [connection signal="finished" from="CanvasLayer/Countdown" to="." method="_on_countdown_finished"]
+[connection signal="scene_changing" from="CanvasLayer/InstructionsContainer/VBoxContainer/NavigateToMenuButton" to="." method="_on_navigate_to_menu_button_scene_changing"]

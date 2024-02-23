@@ -1,17 +1,19 @@
 extends Node2D
 
-var body1 = preload("res://scenes/games/Jackie_Codes_Game/scenes/body.tscn")
-var body2 =preload("res://scenes/games/Jackie_Codes_Game/scenes/inhertired_body_2.tscn")
-var body3 =preload("res://scenes/games/Jackie_Codes_Game/scenes/Inherited_body_3.tscn")
-var body4 =preload("res://scenes/games/Jackie_Codes_Game/scenes/inherited_body_4.tscn")
-var body5 = preload("res://scenes/games/Jackie_Codes_Game/scenes/inherited_body_5.tscn")
-var body6 = preload("res://scenes/games/Jackie_Codes_Game/scenes/inherited_body_6.tscn")
-var bodies = [body1, body2, body3,body4,body5,body6]
+var bodies = [
+	preload("res://scenes/games/Jackie_Codes_Game/scenes/body.tscn"),
+	preload("res://scenes/games/Jackie_Codes_Game/scenes/inhertired_body_2.tscn"),
+	preload("res://scenes/games/Jackie_Codes_Game/scenes/Inherited_body_3.tscn"),
+	preload("res://scenes/games/Jackie_Codes_Game/scenes/inherited_body_4.tscn"),
+	preload("res://scenes/games/Jackie_Codes_Game/scenes/inherited_body_5.tscn"),
+	preload("res://scenes/games/Jackie_Codes_Game/scenes/inherited_body_6.tscn")
+]
 @onready var spawn = $spawn
 @onready var players = $players
 @onready var control = $Debug/Control
 @onready var prison = $prison
 
+var viewers: Dictionary = {}
 var players_arr = [] 
 @onready var tile_map = $TileMap
 
@@ -23,6 +25,8 @@ solarlabyrinth","
 robotech83", "pandacoder", "ghostlupo86", "snoeyz"]
 var mods = ["frumious__bandersnatch", "robotech83"]
 func _ready() -> void:
+	RenderingServer.set_default_clear_color(Color(1, 0, 0.882353, 1))
+	
 	GameConfigManager.load_config()
 	
 	GiftSingleton.viewer_joined.connect(on_viewer_joined)
@@ -35,6 +39,12 @@ func _ready() -> void:
 #	SignalBus.transparency_toggled.connect(on_transparency_toggled)
 
 	Transition.hide_transition()
+	
+	var active_viewers = GiftSingleton.active_viewers
+	GiftSingleton.active_viewers = []
+	
+	for viewer in active_viewers:
+		spawn_viewer(viewer)
 
 func add_to_gift_array(name):
 	gifters.append(name)
@@ -48,11 +58,8 @@ func on_viewer_joined(viewer_name: String) -> void:
 
 	spawn_viewer(viewer_name)
 
-func spawn_viewer(name:String):
-	
-	
-	
-	name = name.to_lower()
+func spawn_viewer(viewer_name: String):
+	var name = viewer_name.to_lower()
 	var is_in_arr= players_arr.find(name)
 	if is_in_arr == -1:
 		players_arr.append(name)
@@ -68,6 +75,10 @@ func spawn_viewer(name:String):
 		if mods.find(name) != -1:
 			is_mod = true
 		player.init(name, is_gifter,top_3_bool, tile_map, is_mod)
+		viewers[name] = {
+			"name": viewer_name,
+			"player": player
+		}
 		player.global_position = spawn.global_position
 
 func _input(event):
@@ -77,7 +88,9 @@ func _input(event):
 		GiftSingleton.chat("TEST", "jackie_codes")	
 	
 
-func on_viewer_left(name):
+func on_viewer_left(viewer_name: String):
+	var name = viewer_name.to_lower()
+	viewers.erase(name)
 	for pl in players.get_children():
 		if pl.player_name == name:
 			players_arr.erase(name)
@@ -102,3 +115,17 @@ func add_degen_to_prison_array(name):
 	for player in players.get_children():
 		if player.player_name == name:
 			player.transport_to_gulag(prison.global_position)
+
+static func _extract_viewer_name(viewer):
+	if viewer == null:
+		return null
+	return viewer.name
+
+static func _filter_non_null(value):
+	return value != null
+
+func _on_navigate_to_menu_button_scene_changing():
+	var active_viewers: Array[String] = []
+	active_viewers.append_array(viewers.values().map(_extract_viewer_name).filter(_filter_non_null))
+	print("Leaving lemmings scene with %d viewers" % active_viewers.size())
+	GiftSingleton.set_active_viewers(active_viewers)

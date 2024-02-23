@@ -9,6 +9,16 @@
 [node name="Space_Shooter" type="Node2D"]
 script = ExtResource("1_3axlr")
 
+[node name="ColorRect" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 1920.0
+offset_bottom = 1080.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 0, 0.882353, 1)
+
 [node name="Mars" parent="." instance=ExtResource("1_47wmv")]
 position = Vector2(305, 734)
 sprite = ExtResource("2_m2006")
@@ -33,3 +43,5 @@ theme_override_constants/margin_bottom = 8
 
 [node name="NavigateToMenuButton" parent="CanvasLayer/MarginContainer" instance=ExtResource("5_o2rki")]
 layout_mode = 2
+
+[connection signal="scene_changing" from="CanvasLayer/MarginContainer/NavigateToMenuButton" to="." method="_on_navigate_to_menu_button_scene_changing"]

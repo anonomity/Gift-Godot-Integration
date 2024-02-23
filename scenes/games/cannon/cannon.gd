@@ -9,7 +9,7 @@ enum GAME_STATE {WAITING, RUNNING, WINNER, PAUSED}
 var state: GAME_STATE = GAME_STATE.WAITING
 var viewers: Dictionary = {}
 
-var viewers_to_add: Array = []
+var viewers_to_add: Array[String] = []
 
 @onready var viewer_container: Node2D = $ViewerContainer
 @onready var cannon: Node2D = $Cannon
@@ -40,8 +40,14 @@ func _ready() -> void:
 
 	change_state(GAME_STATE.WAITING)
 	Transition.hide_transition()
+	
+	var active_viewers = GiftSingleton.active_viewers
+	GiftSingleton.active_viewers = []
+	
+	for viewer in active_viewers:
+		spawn_viewer(viewer)
 
-func _process(delta: float) -> void:
+func _process(delta: float) -> void:	
 	if Input.is_action_just_pressed("ui_cancel"):
 		GameConfigManager.save_config()
 		SceneSwitcher.change_scene_to(SceneSwitcher.selection_scene, true, null)
@@ -181,3 +187,9 @@ func on_transparency_toggled(transparent: bool) -> void:
 	for node in get_tree().get_nodes_in_group("Background"):
 		node.visible = not transparent
 		get_viewport().transparent_bg = transparent
+
+func _on_navigate_to_menu_button_scene_changing():
+	var active_viewers: Array[String] = []
+	active_viewers.append_array(viewers.keys())
+	print("Leaving cannon scene with %d viewers" % active_viewers.size())
+	GiftSingleton.set_active_viewers(active_viewers)

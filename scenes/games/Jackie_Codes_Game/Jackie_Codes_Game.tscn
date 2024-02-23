@@ -123,6 +123,16 @@ size = Vector2(3079, 212)
 [node name="Jackie_Game" type="Node2D"]
 script = ExtResource("1_r2q44")
 
+[node name="ColorRect" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 1920.0
+offset_bottom = 1080.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 0, 0.882353, 1)
+
 [node name="edges" type="Node2D" parent="."]
 position = Vector2(-2, -242)
 
@@ -204,3 +214,4 @@ layout_mode = 2
 [connection signal="text_changed" from="Debug/Control/PanelContainer/VBoxContainer/LineEdit" to="Debug" method="_on_line_edit_text_changed"]
 [connection signal="pressed" from="Debug/Control/PanelContainer/VBoxContainer/Button" to="Debug" method="_on_button_pressed"]
 [connection signal="pressed" from="Debug/Control/PanelContainer/VBoxContainer/Button2" to="Debug" method="_on_button_2_pressed"]
+[connection signal="scene_changing" from="Debug/MarginContainer/NavigateToMenuButton" to="." method="_on_navigate_to_menu_button_scene_changing"]
