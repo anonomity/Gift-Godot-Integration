@@ -303,8 +303,8 @@ horizontal_alignment = 2
 [node name="ViewersList" parent="CanvasLayer/WaitingList" instance=ExtResource("8_3hiv4")]
 layout_direction = 3
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 0.447059)
 theme_override_colors/guide_color = Color(0, 0, 0, 0)
+theme_override_colors/font_color = Color(1, 1, 1, 0.447059)
 theme_override_font_sizes/font_size = 16
 allow_search = false
 
@@ -321,8 +321,8 @@ text = "Dead"
 
 [node name="ViewersList" parent="CanvasLayer/DeadList" instance=ExtResource("8_3hiv4")]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 0.447059)
 theme_override_colors/guide_color = Color(0, 0, 0, 0)
+theme_override_colors/font_color = Color(1, 1, 1, 0.447059)
 theme_override_font_sizes/font_size = 16
 allow_search = false
 list_type = 2
