@@ -1,0 +1,29 @@
+[gd_scene load_steps=3 format=3 uid="uid://de5udq6cvagf6"]
+
+[ext_resource type="PackedScene" uid="uid://c608sl33uakdf" path="res://scenes/games/Jackie_Codes_Game/scenes/body.tscn" id="1_scgc2"]
+[ext_resource type="SpriteFrames" uid="uid://mxw327up7751" path="res://scenes/games/Jackie_Codes_Game/Resources/logcraft_char.tres" id="2_4bntf"]
+
+[node name="Inherited_Body_4" instance=ExtResource("1_scgc2")]
+
+[node name="CollisionShape2D" parent="." index="0"]
+position = Vector2(0, -3.5)
+
+[node name="name_label" parent="." index="1"]
+offset_left = -61.0
+offset_top = -44.5
+offset_right = 72.0
+offset_bottom = -29.5
+
+[node name="Sprite2D" parent="Node2D" index="0"]
+sprite_frames = ExtResource("2_4bntf")
+frame_progress = 0.929016
+offset = Vector2(0, -11.035)
+
+[node name="hat" parent="Node2D/Sprite2D" index="0"]
+position = Vector2(2.5, -19.5)
+rotation = -0.610865
+scale = Vector2(0.928484, 1.32765)
+flip_h = true
+
+[node name="bone_text" parent="Node2D/Sprite2D" index="1"]
+position = Vector2(6.5, -14.5)

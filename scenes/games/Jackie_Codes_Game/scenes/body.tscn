@@ -1,0 +1,134 @@
+[gd_scene load_steps=17 format=3 uid="uid://c608sl33uakdf"]
+
+[ext_resource type="Script" path="res://scenes/games/Jackie_Codes_Game/scripts/body.gd" id="1_vunp3"]
+[ext_resource type="Texture2D" uid="uid://cq458ma5hc50l" path="res://scenes/games/Jackie_Codes_Game/assets/mrSombrero.png" id="2_pgtj7"]
+[ext_resource type="FontFile" uid="uid://cvcy6do6tr42v" path="res://scenes/games/Jackie_Codes_Game/scenes/Kenney Pixel.ttf" id="3_t5bp4"]
+[ext_resource type="Texture2D" uid="uid://cp0uosi8t066t" path="res://scenes/games/Jackie_Codes_Game/assets/1px.png" id="4_oexit"]
+[ext_resource type="Texture2D" uid="uid://dyf6fqkoc8gc8" path="res://scenes/games/Jackie_Codes_Game/assets/santa_hat.png" id="5_0vhvf"]
+[ext_resource type="Texture2D" uid="uid://dntn2ih6ftucd" path="res://scenes/games/Jackie_Codes_Game/assets/Bone.png" id="6_bmpvh"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_3hpct"]
+radius = 4.0
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_rlmiq"]
+emission_shape = 1
+emission_sphere_radius = 6.81
+particle_flag_disable_z = true
+direction = Vector3(0, -50, 0)
+gravity = Vector3(0, 9.8, 0)
+initial_velocity_min = 28.94
+initial_velocity_max = 58.24
+orbit_velocity_min = 0.0
+orbit_velocity_max = 0.0
+linear_accel_max = 85.5
+scale_min = 4.0
+scale_max = 9.5
+color = Color(0.921569, 0.356863, 0.0705882, 1)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gvlgq"]
+atlas = ExtResource("2_pgtj7")
+region = Rect2(48, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bi75y"]
+atlas = ExtResource("2_pgtj7")
+region = Rect2(64, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qw23a"]
+atlas = ExtResource("2_pgtj7")
+region = Rect2(80, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bsnpl"]
+atlas = ExtResource("2_pgtj7")
+region = Rect2(96, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7yvqn"]
+atlas = ExtResource("2_pgtj7")
+region = Rect2(112, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f1jxa"]
+atlas = ExtResource("2_pgtj7")
+region = Rect2(128, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_pjd1w"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gvlgq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bi75y")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qw23a")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bsnpl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7yvqn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_f1jxa")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kw0x5"]
+atlas = ExtResource("6_bmpvh")
+region = Rect2(98.5488, 19.6842, 11.9696, 40.0437)
+
+[node name="body" type="CharacterBody2D"]
+scale = Vector2(2, 2)
+collision_layer = 2
+collision_mask = 4
+wall_min_slide_angle = 0.0
+script = ExtResource("1_vunp3")
+should_flip = true
+hat_reversed = null
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-0.5, -3.5)
+shape = SubResource("CircleShape2D_3hpct")
+
+[node name="name_label" type="Label" parent="."]
+modulate = Color(1, 1, 0.921569, 1)
+z_index = 1
+z_as_relative = false
+offset_left = -63.5
+offset_top = -33.5
+offset_right = 69.5
+offset_bottom = -18.5
+theme_override_fonts/font = ExtResource("3_t5bp4")
+theme_override_font_sizes/font_size = 16
+text = "Frumious__Bandersnatch"
+horizontal_alignment = 1
+clip_text = true
+
+[node name="explode" type="GPUParticles2D" parent="."]
+emitting = false
+amount = 30
+process_material = SubResource("ParticleProcessMaterial_rlmiq")
+texture = ExtResource("4_oexit")
+one_shot = true
+explosiveness = 0.82
+
+[node name="Node2D" type="Node2D" parent="."]
+
+[node name="Sprite2D" type="AnimatedSprite2D" parent="Node2D"]
+sprite_frames = SubResource("SpriteFrames_pjd1w")
+autoplay = "default"
+frame_progress = 0.955202
+offset = Vector2(0, -7.93)
+
+[node name="hat" type="Sprite2D" parent="Node2D/Sprite2D"]
+position = Vector2(-0.5, -9)
+scale = Vector2(0.625, 0.84375)
+texture = ExtResource("5_0vhvf")
+offset = Vector2(0, -10.205)
+
+[node name="bone_text" type="Sprite2D" parent="Node2D/Sprite2D"]
+position = Vector2(4.5, -15)
+scale = Vector2(0.58, 0.58)
+texture = SubResource("AtlasTexture_kw0x5")

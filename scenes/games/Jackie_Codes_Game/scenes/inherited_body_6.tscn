@@ -1,0 +1,71 @@
+[gd_scene load_steps=9 format=3 uid="uid://ctmfy4efsx8g0"]
+
+[ext_resource type="PackedScene" uid="uid://c608sl33uakdf" path="res://scenes/games/Jackie_Codes_Game/scenes/body.tscn" id="1_os2mo"]
+[ext_resource type="Texture2D" uid="uid://vceronbgy5t4" path="res://scenes/games/Jackie_Codes_Game/assets/Boar_M-sheet.png" id="2_xg2ku"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_m4wcf"]
+atlas = ExtResource("2_xg2ku")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_q8dem"]
+atlas = ExtResource("2_xg2ku")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ib73l"]
+atlas = ExtResource("2_xg2ku")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7vvai"]
+atlas = ExtResource("2_xg2ku")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2d348"]
+atlas = ExtResource("2_xg2ku")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_y3630"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_m4wcf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_q8dem")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ib73l")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7vvai")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2d348")
+}],
+"loop": true,
+"name": &"default",
+"speed": 10.0
+}]
+
+[node name="inherited_body_6" instance=ExtResource("1_os2mo")]
+
+[node name="CollisionShape2D" parent="." index="0"]
+position = Vector2(-0.5, -4)
+
+[node name="name_label" parent="." index="1"]
+offset_left = -65.0
+offset_top = -30.5
+offset_right = 68.0
+offset_bottom = -15.5
+
+[node name="Sprite2D" parent="Node2D" index="0"]
+sprite_frames = SubResource("SpriteFrames_y3630")
+frame_progress = 0.871661
+offset = Vector2(0, -16.12)
+
+[node name="hat" parent="Node2D/Sprite2D" index="0"]
+position = Vector2(1, -11)
+flip_h = true
+
+[node name="bone_text" parent="Node2D/Sprite2D" index="1"]
+position = Vector2(10.5, -5)
+rotation = 1.57952

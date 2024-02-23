@@ -1,0 +1,30 @@
+[gd_scene load_steps=3 format=3 uid="uid://dh81s8m6fjg6t"]
+
+[ext_resource type="PackedScene" uid="uid://c608sl33uakdf" path="res://scenes/games/Jackie_Codes_Game/scenes/body.tscn" id="1_v0xj2"]
+[ext_resource type="SpriteFrames" uid="uid://btfqbxxu5sca6" path="res://scenes/games/Jackie_Codes_Game/Resources/agape_1.tres" id="2_m28av"]
+
+[node name="Inherited_body_2" instance=ExtResource("1_v0xj2")]
+
+[node name="CollisionShape2D" parent="." index="0"]
+position = Vector2(-0.5, -4)
+
+[node name="name_label" parent="." index="1"]
+offset_left = -62.0
+offset_top = -36.5
+offset_right = 71.0
+offset_bottom = -21.5
+
+[node name="Sprite2D" parent="Node2D" index="0"]
+sprite_frames = ExtResource("2_m28av")
+frame_progress = 0.0
+offset = Vector2(0, -12.045)
+
+[node name="hat" parent="Node2D/Sprite2D" index="0"]
+position = Vector2(-1, -14)
+rotation = -0.42586
+scale = Vector2(0.78125, 1.01563)
+flip_h = true
+
+[node name="bone_text" parent="Node2D/Sprite2D" index="1"]
+position = Vector2(6, -12)
+rotation = 0.479966

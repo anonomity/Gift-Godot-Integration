@@ -1,0 +1,56 @@
+[gd_scene load_steps=5 format=3 uid="uid://25upwj1yr6ro"]
+
+[ext_resource type="Texture2D" uid="uid://brsnl0i8tfcfm" path="res://scenes/games/Space_Shooter/assets/asteroid.png" id="1_4jrb1"]
+[ext_resource type="Script" path="res://scenes/games/Space_Shooter/scripts/space_shooter.gd" id="2_65res"]
+[ext_resource type="Texture2D" uid="uid://cp0uosi8t066t" path="res://scenes/games/Jackie_Codes_Game/assets/1px.png" id="3_tskw7"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_jnqps"]
+radius = 8.96181
+
+[node name="hit_box" type="Area2D"]
+script = ExtResource("2_65res")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(1, 1)
+shape = SubResource("CircleShape2D_jnqps")
+
+[node name="asteroid" type="Sprite2D" parent="."]
+position = Vector2(-1.19209e-07, 4.76837e-07)
+rotation = -0.680679
+scale = Vector2(0.35, 0.35)
+texture = ExtResource("1_4jrb1")
+
+[node name="Label" type="Label" parent="."]
+offset_left = -27.0
+offset_top = -37.0
+offset_right = 57.0
+offset_bottom = -11.0
+rotation = 0.0139626
+scale = Vector2(1.01, 1.01)
+pivot_offset = Vector2(42, 13)
+text = "pandacodr"
+
+[node name="barrel_1" type="Sprite2D" parent="."]
+position = Vector2(6.14675, -3.05088)
+rotation = -0.63181
+scale = Vector2(11.072, 2.49616)
+texture = ExtResource("3_tskw7")
+offset = Vector2(0.405, 0)
+
+[node name="barrel_1_marker" type="Marker2D" parent="barrel_1"]
+position = Vector2(0.889711, -0.0651097)
+
+[node name="barrel_2" type="Sprite2D" parent="."]
+position = Vector2(-4.28322, 5.23257)
+rotation = 2.49233
+scale = Vector2(11.072, 2.49615)
+texture = ExtResource("3_tskw7")
+offset = Vector2(0.405, 0)
+
+[node name="barrel_2_marker" type="Marker2D" parent="barrel_2"]
+position = Vector2(0.870092, 0.0286988)
+
+[node name="can_bang_timer" type="Timer" parent="."]
+wait_time = 60.0
+
+[connection signal="timeout" from="can_bang_timer" to="asteroid" method="_on_can_bang_timer_timeout"]

@@ -1,0 +1,53 @@
+[gd_resource type="SpriteFrames" load_steps=8 format=3 uid="uid://btfqbxxu5sca6"]
+
+[ext_resource type="Texture2D" uid="uid://4oqbwlwslidn" path="res://scenes/games/Jackie_Codes_Game/assets/Walking.png" id="1_b80tl"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ywhcw"]
+atlas = ExtResource("1_b80tl")
+region = Rect2(140, 0, 20, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dyye7"]
+atlas = ExtResource("1_b80tl")
+region = Rect2(160, 0, 20, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fy0js"]
+atlas = ExtResource("1_b80tl")
+region = Rect2(180, 0, 20, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vwg4g"]
+atlas = ExtResource("1_b80tl")
+region = Rect2(200, 0, 20, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gjlv1"]
+atlas = ExtResource("1_b80tl")
+region = Rect2(220, 0, 20, 40)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_oighp"]
+atlas = ExtResource("1_b80tl")
+region = Rect2(240, 0, 20, 40)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ywhcw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dyye7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fy0js")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vwg4g")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gjlv1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_oighp")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]

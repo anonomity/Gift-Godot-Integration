@@ -25,6 +25,8 @@ Transition="*res://autoload/transition.tscn"
 AdminWindow="*res://autoload/admin_window.tscn"
 SceneSwitcher="*res://autoload/scene_switcher.gd"
 GameConfigManager="*res://autoload/game_config_manager.gd"
+SpaceGlobals="*res://scenes/games/Space_Shooter/scripts/Space_Globals.gd"
+GlobalTilemap="*res://scenes/games/Jackie_Codes_Game/scenes/global_tilemap.gd"
 
 [display]
 
@@ -49,20 +51,35 @@ import/blender/enabled=false
 
 admin={
 "deadzone": 0.5,
-"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":96,"key_label":0,"unicode":178,"location":0,"echo":false,"script":null)
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":96,"key_label":0,"unicode":178,"echo":false,"script":null)
 ]
 }
 enter={
 "deadzone": 0.5,
-"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194309,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194309,"key_label":0,"unicode":0,"echo":false,"script":null)
 ]
 }
 transparent={
 "deadzone": 0.5,
-"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194332,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194332,"key_label":0,"unicode":0,"echo":false,"script":null)
 ]
 }
+test={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194335,"key_label":0,"unicode":0,"echo":false,"script":null)
+]
+}
+
+[layer_names]
+
+2d_physics/layer_2="Player"
+2d_physics/layer_3="Floor"
 
 [physics]
 
 2d/physics_engine="Box2D"
+
+[rendering]
+
+textures/canvas_textures/default_texture_filter=0
+environment/defaults/default_clear_color=Color(1, 0, 0.882353, 1)

@@ -1,0 +1,53 @@
+[gd_resource type="SpriteFrames" load_steps=8 format=3 uid="uid://mxw327up7751"]
+
+[ext_resource type="Texture2D" uid="uid://c6m1rviey7d4" path="res://scenes/games/Jackie_Codes_Game/assets/logcraft_char_sprite.png" id="1_fw3w5"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6c8en"]
+atlas = ExtResource("1_fw3w5")
+region = Rect2(768, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_oewv8"]
+atlas = ExtResource("1_fw3w5")
+region = Rect2(832, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2scjm"]
+atlas = ExtResource("1_fw3w5")
+region = Rect2(896, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nf0tm"]
+atlas = ExtResource("1_fw3w5")
+region = Rect2(960, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_56yp4"]
+atlas = ExtResource("1_fw3w5")
+region = Rect2(1024, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uuokc"]
+atlas = ExtResource("1_fw3w5")
+region = Rect2(1088, 0, 64, 64)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6c8en")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_oewv8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2scjm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nf0tm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_56yp4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uuokc")
+}],
+"loop": true,
+"name": &"default",
+"speed": 10.0
+}]

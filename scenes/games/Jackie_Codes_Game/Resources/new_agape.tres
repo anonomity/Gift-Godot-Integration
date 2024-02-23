@@ -1,0 +1,53 @@
+[gd_resource type="SpriteFrames" load_steps=8 format=3 uid="uid://b6xfnw2efl4mu"]
+
+[ext_resource type="Texture2D" uid="uid://6rqnqf08qn0b" path="res://scenes/games/Jackie_Codes_Game/assets/NewAgapeWalking.png" id="1_srevk"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kn1sn"]
+atlas = ExtResource("1_srevk")
+region = Rect2(384, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nt4cc"]
+atlas = ExtResource("1_srevk")
+region = Rect2(448, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xunu8"]
+atlas = ExtResource("1_srevk")
+region = Rect2(512, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vdl0k"]
+atlas = ExtResource("1_srevk")
+region = Rect2(576, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_p3tgo"]
+atlas = ExtResource("1_srevk")
+region = Rect2(640, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6bbvk"]
+atlas = ExtResource("1_srevk")
+region = Rect2(704, 0, 64, 64)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kn1sn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nt4cc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xunu8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vdl0k")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_p3tgo")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6bbvk")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]

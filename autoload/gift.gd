@@ -165,6 +165,7 @@ func add_viewer_command(cmd_info: CommandInfo) -> void:
 	viewer_joined.emit(cmd_info.sender_data.tags["display-name"])
 
 
+
 func remove_viewer_command(cmd_info: CommandInfo) -> void:
 	viewer_left.emit(cmd_info.sender_data.tags["display-name"])
 

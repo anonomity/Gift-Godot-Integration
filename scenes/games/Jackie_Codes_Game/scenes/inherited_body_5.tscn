@@ -1,0 +1,29 @@
+[gd_scene load_steps=3 format=3 uid="uid://bl0o0hstao5xk"]
+
+[ext_resource type="PackedScene" uid="uid://c608sl33uakdf" path="res://scenes/games/Jackie_Codes_Game/scenes/body.tscn" id="1_mxhmc"]
+[ext_resource type="SpriteFrames" uid="uid://di0r7wbcobegf" path="res://scenes/games/Jackie_Codes_Game/Resources/mushroom_sprite.tres" id="2_spu3j"]
+
+[node name="body" instance=ExtResource("1_mxhmc")]
+
+[node name="CollisionShape2D" parent="." index="0"]
+position = Vector2(0, -4)
+
+[node name="name_label" parent="." index="1"]
+offset_left = -57.0
+offset_top = -36.0
+offset_right = 76.0
+offset_bottom = -21.0
+
+[node name="Sprite2D" parent="Node2D" index="0"]
+sprite_frames = ExtResource("2_spu3j")
+frame_progress = 0.0
+offset = Vector2(0, -12.62)
+
+[node name="hat" parent="Node2D/Sprite2D" index="0"]
+position = Vector2(0.999999, -12.5)
+rotation = -0.69115
+scale = Vector2(1.01891, 1.17657)
+flip_h = true
+
+[node name="bone_text" parent="Node2D/Sprite2D" index="1"]
+position = Vector2(7, -11.5)

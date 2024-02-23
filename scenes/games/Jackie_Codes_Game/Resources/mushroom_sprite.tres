@@ -1,0 +1,39 @@
+[gd_resource type="SpriteFrames" load_steps=6 format=3 uid="uid://di0r7wbcobegf"]
+
+[ext_resource type="Texture2D" uid="uid://bxtv61y5gnd4x" path="res://scenes/games/Jackie_Codes_Game/assets/mushroom_sprite_sheet.png" id="1_3vxsf"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ry6jv"]
+atlas = ExtResource("1_3vxsf")
+region = Rect2(0, 0, 40, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x1xkj"]
+atlas = ExtResource("1_3vxsf")
+region = Rect2(40, 0, 40, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_thg0s"]
+atlas = ExtResource("1_3vxsf")
+region = Rect2(80, 0, 40, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_py5iy"]
+atlas = ExtResource("1_3vxsf")
+region = Rect2(120, 0, 40, 24)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ry6jv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x1xkj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_thg0s")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_py5iy")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]

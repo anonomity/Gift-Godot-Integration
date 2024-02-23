@@ -1,0 +1,18 @@
+[gd_scene load_steps=5 format=3 uid="uid://sftmvdmmb82"]
+
+[ext_resource type="Script" path="res://scenes/games/Space_Shooter/scripts/space_shooter_game.gd" id="1_3axlr"]
+[ext_resource type="PackedScene" uid="uid://647c43gw7d5w" path="res://scenes/games/Space_Shooter/planet.tscn" id="1_47wmv"]
+[ext_resource type="Texture2D" uid="uid://dmeh3s67y3ub8" path="res://scenes/games/Space_Shooter/assets/pngimg.com - mars_planet_PNG26.png" id="2_m2006"]
+[ext_resource type="Texture2D" uid="uid://dt2b3rgvj84y1" path="res://scenes/games/Space_Shooter/assets/Jupiter.png" id="5_yd6uq"]
+
+[node name="Space_Shooter" type="Node2D"]
+script = ExtResource("1_3axlr")
+
+[node name="Mars" parent="." instance=ExtResource("1_47wmv")]
+position = Vector2(305, 734)
+sprite = ExtResource("2_m2006")
+
+[node name="Jupiter" parent="." instance=ExtResource("1_47wmv")]
+position = Vector2(1489, 273)
+planet_type = 1
+sprite = ExtResource("5_yd6uq")
