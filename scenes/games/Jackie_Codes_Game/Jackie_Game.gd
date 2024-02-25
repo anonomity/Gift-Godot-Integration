@@ -10,7 +10,7 @@ var bodies = [
 ]
 @onready var spawn = $spawn
 @onready var players = $players
-@onready var control = $Debug/Control
+@onready var node_ui = $UI
 @onready var prison = $prison
 
 var viewers: Dictionary = {}
@@ -25,8 +25,6 @@ solarlabyrinth","
 robotech83", "pandacoder", "ghostlupo86", "snoeyz"]
 var mods = ["frumious__bandersnatch", "robotech83"]
 func _ready() -> void:
-	RenderingServer.set_default_clear_color(Color(1, 0, 0.882353, 1))
-	
 	GameConfigManager.load_config()
 	
 	GiftSingleton.viewer_joined.connect(on_viewer_joined)
@@ -83,7 +81,7 @@ func spawn_viewer(viewer_name: String):
 
 func _input(event):
 	if Input.is_action_just_pressed("transparent"):
-		control.visible = !control.visible
+		node_ui.visible = !node_ui.visible
 	if Input.is_action_just_pressed("test"):
 		GiftSingleton.chat("TEST", "jackie_codes")	
 	

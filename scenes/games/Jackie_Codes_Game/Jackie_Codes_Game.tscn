@@ -1,10 +1,11 @@
-[gd_scene load_steps=9 format=3 uid="uid://brmp2rdcb3u7j"]
+[gd_scene load_steps=10 format=3 uid="uid://brmp2rdcb3u7j"]
 
 [ext_resource type="Script" path="res://scenes/games/Jackie_Codes_Game/Jackie_Game.gd" id="1_r2q44"]
 [ext_resource type="Script" path="res://scenes/games/Jackie_Codes_Game/scripts/Debug.gd" id="2_8d6am"]
 [ext_resource type="Texture2D" uid="uid://hn5dupehdntl" path="res://scenes/games/Jackie_Codes_Game/assets/gulag_priosn.png" id="3_t8pet"]
 [ext_resource type="Texture2D" uid="uid://trpivknmsptd" path="res://scenes/games/Jackie_Codes_Game/assets/tileset.png" id="4_1h4ci"]
 [ext_resource type="PackedScene" uid="uid://fmo8nhxqjycj" path="res://scenes/ui/navigate_to_menu_button.tscn" id="5_3nmcv"]
+[ext_resource type="PackedScene" uid="uid://bj80oc4in7k7n" path="res://scenes/ui/selection.tscn" id="5_m2nac"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_s8ixc"]
 texture = ExtResource("4_1h4ci")
@@ -123,16 +124,6 @@ size = Vector2(3079, 212)
 [node name="Jackie_Game" type="Node2D"]
 script = ExtResource("1_r2q44")
 
-[node name="ColorRect" type="ColorRect" parent="."]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_right = 1920.0
-offset_bottom = 1080.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(1, 0, 0.882353, 1)
-
 [node name="edges" type="Node2D" parent="."]
 position = Vector2(-2, -242)
 
@@ -160,44 +151,9 @@ collision_mask = 2
 position = Vector2(1481.5, 969)
 shape = SubResource("RectangleShape2D_xad7p")
 
-[node name="Debug" type="CanvasLayer" parent="." node_paths=PackedStringArray("game_node")]
-script = ExtResource("2_8d6am")
-game_node = NodePath("..")
+[node name="UI" type="CanvasLayer" parent="."]
 
-[node name="Control" type="Control" parent="Debug"]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -10.0
-offset_top = -28.0
-offset_right = -10.0
-offset_bottom = -28.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="PanelContainer" type="PanelContainer" parent="Debug/Control"]
-layout_mode = 0
-offset_left = 1.0
-offset_top = 75.0
-offset_right = 253.0
-offset_bottom = 391.0
-
-[node name="VBoxContainer" type="VBoxContainer" parent="Debug/Control/PanelContainer"]
-layout_mode = 2
-
-[node name="LineEdit" type="LineEdit" parent="Debug/Control/PanelContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="Button" type="Button" parent="Debug/Control/PanelContainer/VBoxContainer"]
-layout_mode = 2
-text = "Santa Hat"
-
-[node name="Button2" type="Button" parent="Debug/Control/PanelContainer/VBoxContainer"]
-layout_mode = 2
-text = "prison"
-
-[node name="MarginContainer" type="MarginContainer" parent="Debug"]
+[node name="MarginContainer" type="MarginContainer" parent="UI"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -208,10 +164,39 @@ theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 8
 
-[node name="NavigateToMenuButton" parent="Debug/MarginContainer" instance=ExtResource("5_3nmcv")]
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/MarginContainer"]
 layout_mode = 2
 
-[connection signal="text_changed" from="Debug/Control/PanelContainer/VBoxContainer/LineEdit" to="Debug" method="_on_line_edit_text_changed"]
-[connection signal="pressed" from="Debug/Control/PanelContainer/VBoxContainer/Button" to="Debug" method="_on_button_pressed"]
-[connection signal="pressed" from="Debug/Control/PanelContainer/VBoxContainer/Button2" to="Debug" method="_on_button_2_pressed"]
-[connection signal="scene_changing" from="Debug/MarginContainer/NavigateToMenuButton" to="." method="_on_navigate_to_menu_button_scene_changing"]
+[node name="NavigateToMenuButton" parent="UI/MarginContainer/VBoxContainer" instance=ExtResource("5_3nmcv")]
+layout_mode = 2
+menu_packed_scene = ExtResource("5_m2nac")
+
+[node name="Control" type="Control" parent="UI/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="DebugPanel" type="PanelContainer" parent="UI/MarginContainer/VBoxContainer/Control" node_paths=PackedStringArray("game_node")]
+layout_mode = 0
+offset_top = 56.0
+offset_right = 320.0
+offset_bottom = 456.0
+script = ExtResource("2_8d6am")
+game_node = NodePath("../../../../..")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/MarginContainer/VBoxContainer/Control/DebugPanel"]
+layout_mode = 2
+
+[node name="InputName" type="LineEdit" parent="UI/MarginContainer/VBoxContainer/Control/DebugPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="ButtonAddGifter" type="Button" parent="UI/MarginContainer/VBoxContainer/Control/DebugPanel/VBoxContainer"]
+layout_mode = 2
+text = "Santa Hat"
+
+[node name="ButtonImprison" type="Button" parent="UI/MarginContainer/VBoxContainer/Control/DebugPanel/VBoxContainer"]
+layout_mode = 2
+text = "Imprison"
+
+[connection signal="scene_changing" from="UI/MarginContainer/VBoxContainer/NavigateToMenuButton" to="." method="_on_navigate_to_menu_button_scene_changing"]
+[connection signal="text_changed" from="UI/MarginContainer/VBoxContainer/Control/DebugPanel/VBoxContainer/InputName" to="UI/MarginContainer/VBoxContainer/Control/DebugPanel" method="_on_line_edit_text_changed"]
+[connection signal="pressed" from="UI/MarginContainer/VBoxContainer/Control/DebugPanel/VBoxContainer/ButtonAddGifter" to="UI/MarginContainer/VBoxContainer/Control/DebugPanel" method="_on_button_pressed"]
+[connection signal="pressed" from="UI/MarginContainer/VBoxContainer/Control/DebugPanel/VBoxContainer/ButtonImprison" to="UI/MarginContainer/VBoxContainer/Control/DebugPanel" method="_on_button_2_pressed"]
