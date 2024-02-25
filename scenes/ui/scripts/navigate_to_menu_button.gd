@@ -5,7 +5,6 @@ extends TextureButton
 signal scene_changing()
 
 func _on_pressed():
-	print("button")
 	Transition.show_transition()
 	await Transition.done
 	scene_changing.emit()
