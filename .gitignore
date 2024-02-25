@@ -13,3 +13,6 @@ configuration.md
 # Mono-specific ignores
 .mono/
 data_*/
+
+# VSCode
+.vscode/settings.json
