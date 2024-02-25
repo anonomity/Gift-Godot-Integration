@@ -1,0 +1,38 @@
+[gd_scene load_steps=3 format=3 uid="uid://ddoqnxu2prbpa"]
+
+[ext_resource type="Script" path="res://scenes/ui/admin_window/console/console.gd" id="1_jk6y6"]
+[ext_resource type="Script" path="res://scenes/ui/scripts/text_edit.gd" id="2_60tqw"]
+
+[node name="Console" type="VBoxContainer"]
+size_flags_vertical = 3
+script = ExtResource("1_jk6y6")
+
+[node name="Output" type="TextEdit" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 12
+editable = false
+wrap_mode = 1
+script = ExtResource("2_60tqw")
+
+[node name="Inputs" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(0, 35)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CommandInput" type="LineEdit" parent="Inputs"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+placeholder_text = "Enter \"help\" for a list of commands"
+clear_button_enabled = true
+
+[node name="SendButton" type="Button" parent="Inputs"]
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+text = "Send"
+
+[connection signal="child_entered_tree" from="Output" to="Output" method="_on_child_entered_tree"]
+[connection signal="text_submitted" from="Inputs/CommandInput" to="." method="_on_command_input_text_submitted"]
+[connection signal="pressed" from="Inputs/SendButton" to="." method="_on_send_button_pressed"]

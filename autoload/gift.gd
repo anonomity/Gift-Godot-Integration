@@ -19,11 +19,11 @@ enum STATUS {
 	CONNECTED
 }
 
-var last_status: = STATUS.NONE
+var last_status := STATUS.NONE
 
 var game_commands: Array = []
 
-var setup_scene: PackedScene = preload("res://scenes/ui/setup.tscn")
+var setup_scene: PackedScene = preload ("res://scenes/ui/setup.tscn")
 
 var active_viewers: Array[String] = []
 
@@ -31,10 +31,9 @@ func _ready() -> void:
 	start()
 
 ## register a game command
-func add_game_command(command: String, command_callback: Callable, max_args: int = 0, min_args: int = 0, permission: PermissionFlag = PermissionFlag.EVERYONE) -> void:
+func add_game_command(command: String, command_callback: Callable, max_args: int=0, min_args: int=0, permission: PermissionFlag=PermissionFlag.EVERYONE) -> void:
 	game_commands.append(command)
 	add_command(command, command_callback, max_args, min_args)
-
 
 ## remove all game_commands
 func remove_game_commands() -> void:
@@ -76,7 +75,7 @@ func start() -> void:
 	await authenticate(client_id, client_secret)
 
 	emit_status(STATUS.CONNECTING)
-	var success = await(connect_to_irc())
+	var success = await (connect_to_irc())
 	if (success):
 		request_caps()
 		join_channel(initial_channel)
@@ -110,7 +109,6 @@ func start() -> void:
 	#add_command("fire", on_viewer_fire, 2, 2)
 	#add_alias("fire", "f")
 
-
 	# Command that prints every arg seperated by a comma (infinite args allowed), at least 2 required
 #	add_command("list", list, -1, 2)
 
@@ -131,28 +129,23 @@ func start() -> void:
 	# Send a whisper to target user
 #	whisper("TEST", initial_channel)
 
-
 func emit_status(new_status: STATUS) -> void:
 	status.emit(new_status)
 	last_status = new_status
 
-
-func on_event(type : String, data : Dictionary) -> void:
-	match(type):
+func on_event(type: String, data: Dictionary) -> void:
+	match (type):
 		"channel.follow":
 			print("%s followed your channel!" % data["user_name"])
 
-
-func on_chat(_data : SenderData, _msg : String) -> void:
+func on_chat(_data: SenderData, _msg: String) -> void:
 #	%ChatContainer.put_chat(data, msg)
 	pass
 
-
-func no_permission(_cmd_info : CommandInfo) -> void:
+func no_permission(_cmd_info: CommandInfo) -> void:
 	chat("NO PERMISSION!")
 
-
-func list(_cmd_info : CommandInfo, arg_ary : PackedStringArray) -> void:
+func list(_cmd_info: CommandInfo, arg_ary: PackedStringArray) -> void:
 	var msg = ""
 	for i in arg_ary.size() - 1:
 		msg += arg_ary[i]
@@ -160,28 +153,27 @@ func list(_cmd_info : CommandInfo, arg_ary : PackedStringArray) -> void:
 	msg += arg_ary[arg_ary.size() - 1]
 	chat(msg)
 
-
 ##
 ## custom commands
 ##
 
-
 func add_viewer_command(cmd_info: CommandInfo) -> void:
-	viewer_joined.emit(cmd_info.sender_data.tags["display-name"])
+	add_viewer(cmd_info.sender_data.tags["display-name"])
 
-
+func add_viewer(display_name: String):
+	viewer_joined.emit(display_name)
 
 func remove_viewer_command(cmd_info: CommandInfo) -> void:
-	viewer_left.emit(cmd_info.sender_data.tags["display-name"])
+	remove_viewr(cmd_info.sender_data.tags["display-name"])
 
+func remove_viewr(display_name: String):
+	viewer_left.emit(display_name)
 
 func streamer_reset_command(_cmd_info: CommandInfo) -> void:
 	viewers_reset.emit()
 
-
-func streamer_start_command(_cmd_info: CommandInfo, arg_ary : PackedStringArray = []) -> void:
+func streamer_start_command(_cmd_info: CommandInfo, arg_ary: PackedStringArray=[]) -> void:
 	streamer_start.emit(arg_ary)
-
 
 func streamer_wait_command(_cmd_info: CommandInfo) -> void:
 	streamer_wait.emit()
