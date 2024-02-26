@@ -210,13 +210,15 @@ func on_viewer_left(viewer_name: String):
 		viewer.player.leave()
 	viewers.erase(search_name)
 	
-func on_viewer_jump(viewer_name: String):
+func on_viewer_jump(command_info: CommandInfo):
+	var viewer_name = command_info.sender_data.user
 	var search_name = viewer_name.to_lower()
 	var player = get_spawned_player(viewer_name)
 	if player:
 		player.jump()
 
-func on_viewer_dig(viewer_name: String):
+func on_viewer_dig(command_info: CommandInfo):
+	var viewer_name = command_info.sender_data.user
 	var search_name = viewer_name.to_lower()
 	var player = get_spawned_player(viewer_name)
 	if player:
