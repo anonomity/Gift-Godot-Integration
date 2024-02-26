@@ -128,7 +128,7 @@ script = ExtResource("1_r2q44")
 position = Vector2(-2, -242)
 
 [node name="spawn" type="Marker2D" parent="."]
-position = Vector2(985, 499)
+position = Vector2(960, 540)
 
 [node name="players" type="Node2D" parent="."]
 
@@ -176,27 +176,94 @@ layout_mode = 2
 
 [node name="DebugPanel" type="PanelContainer" parent="UI/MarginContainer/VBoxContainer/Control" node_paths=PackedStringArray("game_node")]
 layout_mode = 0
-offset_top = 56.0
 offset_right = 320.0
-offset_bottom = 456.0
+offset_bottom = 400.0
 script = ExtResource("2_8d6am")
 game_node = NodePath("../../../../..")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/MarginContainer/VBoxContainer/Control/DebugPanel"]
+[node name="MarginContainer" type="MarginContainer" parent="UI/MarginContainer/VBoxContainer/Control/DebugPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer"]
 layout_mode = 2
 
-[node name="InputName" type="LineEdit" parent="UI/MarginContainer/VBoxContainer/Control/DebugPanel/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="ButtonAddGifter" type="Button" parent="UI/MarginContainer/VBoxContainer/Control/DebugPanel/VBoxContainer"]
+[node name="LabelName" type="Label" parent="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
-text = "Santa Hat"
+text = "Name"
+horizontal_alignment = 2
 
-[node name="ButtonImprison" type="Button" parent="UI/MarginContainer/VBoxContainer/Control/DebugPanel/VBoxContainer"]
+[node name="InputName" type="LineEdit" parent="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "User name"
+
+[node name="ModeratorButtons" type="HBoxContainer" parent="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ButtonSetModerator" type="Button" parent="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer/ModeratorButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Add Mod"
+
+[node name="ButtonSetNotModerator" type="Button" parent="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer/ModeratorButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Remove Mod"
+
+[node name="GifterButtons" type="HBoxContainer" parent="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ButtonAddGifter" type="Button" parent="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer/GifterButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Give Santa Hat
+"
+
+[node name="ButtonRemoveGifter" type="Button" parent="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer/GifterButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Take Santa Hat"
+
+[node name="TopButtons" type="HBoxContainer" parent="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ButtonAddTop" type="Button" parent="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer/TopButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Set Top 3"
+
+[node name="ButtonRemoveTop" type="Button" parent="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer/TopButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Remove Top 3"
+
+[node name="GulagButtons" type="HBoxContainer" parent="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ButtonImprison" type="Button" parent="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer/GulagButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
 text = "Imprison"
 
+[node name="ButtonFree" type="Button" parent="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer/GulagButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Free"
+
 [connection signal="scene_changing" from="UI/MarginContainer/VBoxContainer/NavigateToMenuButton" to="." method="_on_navigate_to_menu_button_scene_changing"]
-[connection signal="text_changed" from="UI/MarginContainer/VBoxContainer/Control/DebugPanel/VBoxContainer/InputName" to="UI/MarginContainer/VBoxContainer/Control/DebugPanel" method="_on_line_edit_text_changed"]
-[connection signal="pressed" from="UI/MarginContainer/VBoxContainer/Control/DebugPanel/VBoxContainer/ButtonAddGifter" to="UI/MarginContainer/VBoxContainer/Control/DebugPanel" method="_on_button_pressed"]
-[connection signal="pressed" from="UI/MarginContainer/VBoxContainer/Control/DebugPanel/VBoxContainer/ButtonImprison" to="UI/MarginContainer/VBoxContainer/Control/DebugPanel" method="_on_button_2_pressed"]
+[connection signal="text_changed" from="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer/HBoxContainer/InputName" to="UI/MarginContainer/VBoxContainer/Control/DebugPanel" method="_on_input_name_text_changed"]
+[connection signal="pressed" from="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer/ModeratorButtons/ButtonSetModerator" to="UI/MarginContainer/VBoxContainer/Control/DebugPanel" method="_on_button_set_moderator_pressed"]
+[connection signal="pressed" from="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer/ModeratorButtons/ButtonSetNotModerator" to="UI/MarginContainer/VBoxContainer/Control/DebugPanel" method="_on_button_set_not_moderator_pressed"]
+[connection signal="pressed" from="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer/GifterButtons/ButtonAddGifter" to="UI/MarginContainer/VBoxContainer/Control/DebugPanel" method="_on_add_gifter_pressed"]
+[connection signal="pressed" from="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer/GifterButtons/ButtonRemoveGifter" to="UI/MarginContainer/VBoxContainer/Control/DebugPanel" method="_on_remove_gifter_pressed"]
+[connection signal="pressed" from="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer/TopButtons/ButtonAddTop" to="UI/MarginContainer/VBoxContainer/Control/DebugPanel" method="_on_add_top_pressed"]
+[connection signal="pressed" from="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer/TopButtons/ButtonRemoveTop" to="UI/MarginContainer/VBoxContainer/Control/DebugPanel" method="_on_remove_top_pressed"]
+[connection signal="pressed" from="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer/GulagButtons/ButtonImprison" to="UI/MarginContainer/VBoxContainer/Control/DebugPanel" method="_on_imprison_pressed"]
+[connection signal="pressed" from="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer/GulagButtons/ButtonFree" to="UI/MarginContainer/VBoxContainer/Control/DebugPanel" method="_on_free_pressed"]

@@ -11,15 +11,13 @@
 radius = 4.0
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_rlmiq"]
+particle_flag_disable_z = true
 emission_shape = 1
 emission_sphere_radius = 6.81
-particle_flag_disable_z = true
 direction = Vector3(0, -50, 0)
-gravity = Vector3(0, 9.8, 0)
 initial_velocity_min = 28.94
 initial_velocity_max = 58.24
-orbit_velocity_min = 0.0
-orbit_velocity_max = 0.0
+gravity = Vector3(0, 9.8, 0)
 linear_accel_max = 85.5
 scale_min = 4.0
 scale_max = 9.5
@@ -86,20 +84,21 @@ collision_mask = 4
 wall_min_slide_angle = 0.0
 script = ExtResource("1_vunp3")
 should_flip = true
-hat_reversed = null
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(-0.5, -3.5)
 shape = SubResource("CircleShape2D_3hpct")
 
 [node name="name_label" type="Label" parent="."]
-modulate = Color(1, 1, 0.921569, 1)
 z_index = 1
 z_as_relative = false
 offset_left = -63.5
 offset_top = -33.5
 offset_right = 69.5
 offset_bottom = -18.5
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 1
 theme_override_fonts/font = ExtResource("3_t5bp4")
 theme_override_font_sizes/font_size = 16
 text = "Frumious__Bandersnatch"

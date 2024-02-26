@@ -27,6 +27,7 @@ SceneSwitcher="*res://autoload/scene_switcher.gd"
 GameConfigManager="*res://autoload/game_config_manager.gd"
 SpaceGlobals="*res://scenes/games/Space_Shooter/scripts/Space_Globals.gd"
 GlobalTilemap="*res://scenes/games/Jackie_Codes_Game/scenes/global_tilemap.gd"
+GamePreferencesHelper="*res://autoload/game_preferences_helper.gd"
 
 [display]
 

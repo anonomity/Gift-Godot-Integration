@@ -1,10 +1,10 @@
-extends CharacterBody2D
+class_name Lemming extends CharacterBody2D
 
 @export var should_flip : bool = false
 var speed = 100.0
 const JUMP_VELOCITY = -400.0
 @onready var name_label = $name_label
-@onready var sprite_2d =$Node2D/Sprite2D 
+@onready var sprite_2d: AnimatedSprite2D = $Node2D/Sprite2D 
 @onready var explode = $explode
 @onready var hat_sprite = $Node2D/Sprite2D/hat
 @onready var node_2d = $Node2D
@@ -18,12 +18,17 @@ var player_name = ""
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 var direction = 1
 
-var crown_sprite = preload("res://scenes/games/Jackie_Codes_Game/assets/crown.png")
+const crown_texture = preload("res://scenes/games/Jackie_Codes_Game/assets/crown.png")
+const hat_texture = preload("res://scenes/games/Jackie_Codes_Game/assets/santa_hat.png")
+
 @export var hat_reversed : bool = false
 var stop = false
 var jumping = false
 var digging = false
 
+var is_gifter = false
+var is_moderator = false
+var is_top = false
 
 func _ready():
 	bone_text.hide()
@@ -47,7 +52,7 @@ func _physics_process(delta):
 		
 	if global_position.x < 200.0:
 		direction = direction * -1
-	if should_flip:
+	if should_flip and !stop:
 		if direction > 0:
 			node_2d.scale = Vector2(1, 1)
 		else:
@@ -80,31 +85,60 @@ func leave():
 	await get_tree().create_timer(3.0).timeout
 	queue_free()
 	
-func init(name, is_gifter = false, top_3 = false, _tilemap =false, is_mod = false):
+func init(name, is_gifter = false, is_mod = false, is_top = false, _tilemap = false):
 	tilemap = _tilemap
-	speed = randf_range(30.0, 50.0)
 	player_name = name
-	if top_3:
-		scale = Vector2(3,3)
-		hat_sprite.texture = crown_sprite
-		hat_sprite.show()
-		name_label.modulate =colors.pick_random()
-	elif is_gifter:
-		make_gifter()
-	
-	if is_mod:
-		bone_text.show()
 	name_label.text = name
+	speed = randf_range(30.0, 50.0)
+	set_moderator(is_mod)
+	set_gifter(is_gifter)
+	set_top(is_top)
 
-func make_gifter():
-	scale = Vector2(3,3)
-	hat_sprite.show()
-	name_label.modulate =colors.pick_random()
+func set_gifter(is_gifter: bool) -> void:
+	self.is_gifter = is_gifter
+	if is_top:
+		return
+
+	if is_gifter:
+		scale = Vector2(3,3)
+		hat_sprite.texture = hat_texture
+		hat_sprite.show()
+		name_label.modulate = colors.pick_random()
+	else:
+		scale = Vector2(2, 2)
+		hat_sprite.hide()
+		name_label.modulate = Color.WHITE
+
+func set_moderator(is_moderator: bool) -> void:
+	self.is_moderator = is_moderator
+	if is_moderator:
+		bone_text.show()
+	else:
+		bone_text.hide()
+
+func set_top(is_top: bool) -> void:
+	self.is_top = is_top
+	if is_top:
+		scale = Vector2(3,3)
+		hat_sprite.texture = crown_texture
+		hat_sprite.show()
+		name_label.modulate = colors.pick_random()
+	elif is_gifter:
+		set_gifter(is_gifter)
+	else:
+		scale = Vector2(2, 2)
+		hat_sprite.hide()
+		name_label.modulate = Color.WHITE
 
 func transport_to_gulag(pos):
 	stop = true
 	global_position = pos
 	sprite_2d.stop()
+
+func release_from_gulag():
+	stop = false
+	sprite_2d.play()
+	global_position.x = 225 + randf_range(0, 25)
 
 func dig():
 	pass
