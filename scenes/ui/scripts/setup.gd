@@ -12,9 +12,11 @@ extends Control
 
 @onready var cancel_button: Button = %CancelButton
 
-var selection_scene: PackedScene = preload("res://scenes/ui/selection.tscn")
+const SCENE_SELECTION: PackedScene = preload("res://scenes/ui/selection.tscn")
 
 func _ready() -> void:
+	GameConfigManager.load_config()
+	
 	client_id_error.text = ""
 	client_secret_error.text = ""
 	channel_error.text = ""
@@ -55,7 +57,7 @@ func _on_cancel_button_pressed():
 	if !GiftSingleton.has_config:
 		return
 
-	get_tree().change_scene_to_packed(selection_scene)
+	_go_to_main_menu()
 
 func _on_create_button_pressed():
 	var has_errors: bool = false
@@ -91,4 +93,7 @@ func _on_create_button_pressed():
 	})
 
 	GiftSingleton.start()
-	get_tree().change_scene_to_packed(selection_scene)
+	_go_to_main_menu()
+	
+func _go_to_main_menu():
+	SceneSwitcher.change_scene_to(SCENE_SELECTION)

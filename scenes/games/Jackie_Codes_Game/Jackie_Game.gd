@@ -59,7 +59,9 @@ class JackieCodesGamePreferences:
 		return dict
 
 func _ready() -> void:
-	GameConfigManager.load_config()
+	GameConfigManager.load_config({
+		"transparent_bg": true
+	})
 	load_preferences()
 
 	SignalBus.ui_visibility_toggled.connect(_on_ui_visibility_toggled)

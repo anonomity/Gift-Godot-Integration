@@ -2,21 +2,22 @@ extends Node
 
 var config_manager := ConfigManager.new()
 
-var game_config: Array[String] = [
-	"window_position",
-	"window_size"
-]
-
-
 ##
 ## public
 ##
 
-
 ## loads the config and apply it when possible
-func load_config() -> Dictionary:
+func load_config(defaults: Dictionary = DEFAULT_COMMON_CONFIG) -> Dictionary:
 	var game_name = _get_scene_file_name()
 	var data: Dictionary = config_manager.get_section(game_name)
+
+	var missing_keys = defaults.keys().filter(func (key): return not data.has(key))
+	if missing_keys.size():
+		var config_with_defaults: Dictionary = {}
+		config_with_defaults.merge(defaults, true)
+		config_with_defaults.merge(data, true)
+		data = config_with_defaults
+		config_manager.set_config_section(config_with_defaults, game_name)
 
 	for key in data:
 		var method_name = "set_%s" % key
@@ -38,10 +39,19 @@ func save_config() -> void:
 
 	config_manager.set_config_section(updated_config, game_name)
 
-
 ##
 ## private
 ##
+
+const DEFAULT_COMMON_CONFIG: Dictionary = {
+	"transparent_bg": false
+}
+
+var game_config: Array[String] = [
+	"transparent_bg",
+	"window_position",
+	"window_size"
+]
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:
@@ -75,3 +85,9 @@ func set_window_size(window_size: Vector2) -> void:
 
 func get_window_size() -> Vector2:
 	return get_window().size
+
+func get_transparent_bg() -> bool:
+	return get_viewport().transparent_bg
+
+func set_transparent_bg(transparent: bool) -> void:
+	SignalBus.emit_transparency_toggled(transparent)

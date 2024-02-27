@@ -12,7 +12,9 @@ var players_arr = []
 var player_obj_arr = []
 
 func _ready() -> void:
-	GameConfigManager.load_config()
+	GameConfigManager.load_config({
+		"transparent_bg": true
+	})
 
 	SignalBus.ui_visibility_toggled.connect(_on_ui_visibility_toggled)
 
