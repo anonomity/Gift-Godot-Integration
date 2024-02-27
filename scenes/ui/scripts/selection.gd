@@ -19,6 +19,8 @@ var status_messages = {
 }
 
 func _ready() -> void:
+	get_viewport().transparent_bg = true
+	
 	GameConfigManager.load_config()
 	Viewers.close()
 
@@ -67,3 +69,7 @@ func on_released_parsed(release: Dictionary) -> void:
 	else:
 		version_btn.text = "You have the latest version: " + release["version"]
 	version_btn.uri = release["url"]
+
+
+func _on_button_configure_pressed():
+	GiftSingleton.change_scene_to_setup()

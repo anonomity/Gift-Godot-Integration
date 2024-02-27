@@ -8,6 +8,7 @@ script = ExtResource("1_hlcbd")
 
 [node name="ToggleRestartWithActiveViewers" type="CheckButton" parent="."]
 layout_mode = 2
+button_pressed = true
 text = "Restart with Active Viewers"
 
 [connection signal="toggled" from="ToggleRestartWithActiveViewers" to="." method="_on_toggle_restart_with_active_viewers_toggled"]

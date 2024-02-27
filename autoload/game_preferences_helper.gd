@@ -24,7 +24,8 @@ func save_preferences(name: String, dict: Dictionary) -> void:
 	var file: FileAccess = FileAccess.open(path_for_game, FileAccess.WRITE)
 	if file:
 		var parser = JSON.new()
-		var json = parser.stringify(dict)
+		var indent = "  " if OS.is_debug_build() else ""
+		var json = parser.stringify(dict, indent)
 		file.store_string(json)
 
 func suggest_name() -> String:

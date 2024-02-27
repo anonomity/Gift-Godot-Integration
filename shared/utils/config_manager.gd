@@ -20,21 +20,17 @@ var allowed_start_config: Dictionary = {
 	]
 }
 
-
-func _init(load_config: bool = true) -> void:
+func _init(load_config: bool=true) -> void:
 	if load_config:
 		_read_config()
-
 
 ##
 ## public
 ##
 
-
 ## get full config data
 func get_config() -> Dictionary:
 	return data
-
 
 ## get data from section
 func get_section(section: String) -> Dictionary:
@@ -43,11 +39,9 @@ func get_section(section: String) -> Dictionary:
 
 	return {}
 
-
 ## set data in section
 func set_config_section(config_data: Dictionary, section: String) -> void:
 	_update_config(config_data, section)
-
 
 ## creates a new configuration file
 func create_configuration(config_data: Dictionary) -> void:
@@ -55,7 +49,7 @@ func create_configuration(config_data: Dictionary) -> void:
 
 	for section in config_data:
 		for key in config_data[section]:
-			if not allowed_start_config.has(section) && allowed_start_config[section].has(key):
+			if not allowed_start_config.has(section)&&allowed_start_config[section].has(key):
 				continue
 
 			config.set_value(section, key, config_data[section][key])
@@ -65,11 +59,9 @@ func create_configuration(config_data: Dictionary) -> void:
 	else:
 		_save(config_file_locations[1])
 
-
 ##
 ## private
 ##
-
 
 ## finds the first config file that exists and loads it
 func _read_config() -> bool:
@@ -85,7 +77,6 @@ func _read_config() -> bool:
 
 	return true
 
-
 ## update the config file with new data
 func _update_config(config_data: Dictionary, section: String) -> void:
 	for key in config_data:
@@ -93,7 +84,6 @@ func _update_config(config_data: Dictionary, section: String) -> void:
 
 	_save()
 	data = _config_to_dictionary()
-
 
 ## loads a config file and returns the data
 func _load_config_file(file: String) -> Dictionary:
@@ -105,11 +95,9 @@ func _load_config_file(file: String) -> Dictionary:
 
 	return _config_to_dictionary()
 
-
 ## save config
-func _save(file_path: String = config_file_path) -> void:
+func _save(file_path: String=config_file_path) -> void:
 	config.save(file_path)
-
 
 ## create dictionary from config
 func _config_to_dictionary() -> Dictionary:

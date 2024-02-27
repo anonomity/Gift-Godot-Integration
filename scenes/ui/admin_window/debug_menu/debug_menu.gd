@@ -10,7 +10,7 @@ func _ready():
 	load_preferences()
 	
 	var viewers = preferences.active_viewers
-	GiftSingleton.active_viewers = viewers
+	GiftSingleton.set_active_viewers(viewers)
 	GiftSingleton.viewer_joined.connect(_on_viewer_joined)
 	GiftSingleton.viewer_left.connect(_on_viewer_left)
 

@@ -1,6 +1,17 @@
-[gd_scene load_steps=2 format=3 uid="uid://bxq5bvkrtriqq"]
+[gd_scene load_steps=4 format=3 uid="uid://bxq5bvkrtriqq"]
 
 [ext_resource type="Script" path="res://scenes/ui/scripts/setup.gd" id="1_uo7aa"]
+
+[sub_resource type="Gradient" id="Gradient_e174d"]
+offsets = PackedFloat32Array(0, 0.986486)
+colors = PackedColorArray(0.128906, 0.128906, 0.128906, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_5k38w"]
+gradient = SubResource("Gradient_e174d")
+width = 1280
+height = 720
+fill_to = Vector2(1, 1)
+metadata/_snap_enabled = true
 
 [node name="setup" type="Control"]
 layout_mode = 3
@@ -12,6 +23,17 @@ grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("1_uo7aa")
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("GradientTexture2D_5k38w")
+expand_mode = 3
+stretch_mode = 5
 
 [node name="CenterContainer" type="CenterContainer" parent="."]
 layout_mode = 1
@@ -26,66 +48,121 @@ layout_mode = 2
 
 [node name="Heading" type="Label" parent="CenterContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 19
+theme_override_font_sizes/font_size = 24
 text = "Twitch"
 
 [node name="Description" type="Label" parent="CenterContainer/VBoxContainer"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 20
 text = "Before we can start, we have to setup twitch integration.
 
 "
 
-[node name="ClientIdLabel" type="Label" parent="CenterContainer/VBoxContainer"]
+[node name="ClientIdHeader" type="HBoxContainer" parent="CenterContainer/VBoxContainer"]
 layout_mode = 2
+
+[node name="ClientIdLabel" type="Label" parent="CenterContainer/VBoxContainer/ClientIdHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
 text = "client_id"
+
+[node name="ShowClientId" type="Button" parent="CenterContainer/VBoxContainer/ClientIdHeader"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Show"
 
 [node name="ClientIdEdit" type="LineEdit" parent="CenterContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_font_sizes/font_size = 20
+secret = true
 
 [node name="ClientIdError" type="Label" parent="CenterContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.490196, 0.490196, 1)
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 20
 text = " "
 
-[node name="ClientSecretLabel" type="Label" parent="CenterContainer/VBoxContainer"]
+[node name="ClientSecretHeader" type="HBoxContainer" parent="CenterContainer/VBoxContainer"]
 layout_mode = 2
+
+[node name="ClientSecretLabel" type="Label" parent="CenterContainer/VBoxContainer/ClientSecretHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
 text = "client_secret"
+
+[node name="ShowClientSecret" type="Button" parent="CenterContainer/VBoxContainer/ClientSecretHeader"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Show"
 
 [node name="ClientSecretEdit" type="LineEdit" parent="CenterContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_font_sizes/font_size = 20
+secret = true
 
 [node name="ClientSecretError" type="Label" parent="CenterContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.490196, 0.490196, 1)
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 20
 text = " "
 
-[node name="ChannelLabel" type="Label" parent="CenterContainer/VBoxContainer"]
+[node name="ChannelHeader" type="HBoxContainer" parent="CenterContainer/VBoxContainer"]
 layout_mode = 2
-text = "channel"
+
+[node name="ChannelLabel" type="Label" parent="CenterContainer/VBoxContainer/ChannelHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+text = "Channel"
+
+[node name="ShowChannel" type="Button" parent="CenterContainer/VBoxContainer/ChannelHeader"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Show"
 
 [node name="ChannelEdit" type="LineEdit" parent="CenterContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_font_sizes/font_size = 20
 
 [node name="ChannelError" type="Label" parent="CenterContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.490196, 0.490196, 1)
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 20
 text = " "
 
 [node name="MarginContainer" type="MarginContainer" parent="CenterContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/margin_top = 32
 
-[node name="CreateButton" type="Button" parent="CenterContainer/VBoxContainer"]
+[node name="SubmissionButtons" type="HBoxContainer" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="CreateButton" type="Button" parent="CenterContainer/VBoxContainer/SubmissionButtons"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 8
-text = "Create"
+theme_override_font_sizes/font_size = 20
+text = "Save"
+
+[node name="Control" type="Control" parent="CenterContainer/VBoxContainer/SubmissionButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CancelButton" type="Button" parent="CenterContainer/VBoxContainer/SubmissionButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Cancel"
+
+[connection signal="pressed" from="CenterContainer/VBoxContainer/ClientIdHeader/ShowClientId" to="." method="_on_show_client_id_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/ClientSecretHeader/ShowClientSecret" to="." method="_on_show_client_secret_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/ChannelHeader/ShowChannel" to="." method="_on_show_channel_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/SubmissionButtons/CreateButton" to="." method="_on_create_button_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/SubmissionButtons/CancelButton" to="." method="_on_cancel_button_pressed"]

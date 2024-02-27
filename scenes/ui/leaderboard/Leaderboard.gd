@@ -93,10 +93,12 @@ func _process(delta):
 	pass
 
 func add_points(name: String, num_points: int = 1, save = true):
-	var entry = entry_lookup.get_or_add(name, {
-		"points": 0,
-		"updated": 0
-	})
+	if not entry_lookup.has(name):
+		entry_lookup[name] = {
+			"points": 0,
+			"updated": 0
+		}
+	var entry = entry_lookup[name]
 	entry.points += num_points
 	entry.updated = Time.get_unix_time_from_system()
 
