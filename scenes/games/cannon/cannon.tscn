@@ -416,9 +416,9 @@ shape = SubResource("RectangleShape2D_w614r")
 color = Color(0.0941176, 0.0941176, 0.0941176, 1)
 polygon = PackedVector2Array(-1368, -32, -1368, 32, 1368, 32, 1368, -32)
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="UI" type="CanvasLayer" parent="."]
 
-[node name="Waiting" type="Label" parent="CanvasLayer"]
+[node name="Waiting" type="Label" parent="UI"]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -435,7 +435,7 @@ theme_override_font_sizes/font_size = 61
 text = "Waiting for players..."
 horizontal_alignment = 1
 
-[node name="Countdown" type="Label" parent="CanvasLayer"]
+[node name="Countdown" type="Label" parent="UI"]
 visible = false
 anchors_preset = 8
 anchor_left = 0.5
@@ -457,7 +457,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 script = ExtResource("13_7e8rs")
 
-[node name="ColorRect" type="ColorRect" parent="CanvasLayer/Countdown"]
+[node name="ColorRect" type="ColorRect" parent="UI/Countdown"]
 self_modulate = Color(0.054902, 0.054902, 0.054902, 0.662745)
 show_behind_parent = true
 layout_mode = 0
@@ -466,7 +466,7 @@ offset_top = -527.0
 offset_right = 1667.0
 offset_bottom = 876.0
 
-[node name="LeaderboardPanel" type="PanelContainer" parent="CanvasLayer"]
+[node name="LeaderboardPanel" type="PanelContainer" parent="UI"]
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
@@ -476,17 +476,17 @@ offset_right = -32.0
 offset_bottom = 352.0
 grow_horizontal = 0
 
-[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/LeaderboardPanel"]
+[node name="MarginContainer" type="MarginContainer" parent="UI/LeaderboardPanel"]
 layout_mode = 2
 theme_override_constants/margin_left = 8
 theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 8
 
-[node name="Leaderboard" parent="CanvasLayer/LeaderboardPanel/MarginContainer" instance=ExtResource("13_c6w4d")]
+[node name="Leaderboard" parent="UI/LeaderboardPanel/MarginContainer" instance=ExtResource("13_c6w4d")]
 layout_mode = 2
 
-[node name="InstructionsContainer" type="MarginContainer" parent="CanvasLayer"]
+[node name="InstructionsContainer" type="MarginContainer" parent="UI"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -499,13 +499,13 @@ theme_override_constants/margin_top = 40
 theme_override_constants/margin_right = 40
 theme_override_constants/margin_bottom = 40
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/InstructionsContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/InstructionsContainer"]
 layout_mode = 2
 
-[node name="NavigateToMenuButton" parent="CanvasLayer/InstructionsContainer/VBoxContainer" instance=ExtResource("14_7hcir")]
+[node name="NavigateToMenuButton" parent="UI/InstructionsContainer/VBoxContainer" instance=ExtResource("14_7hcir")]
 layout_mode = 2
 
-[node name="HowToPlay" type="Label" parent="CanvasLayer/InstructionsContainer/VBoxContainer"]
+[node name="HowToPlay" type="Label" parent="UI/InstructionsContainer/VBoxContainer"]
 self_modulate = Color(1, 1, 1, 0.537255)
 layout_mode = 2
 size_flags_vertical = 3
@@ -515,7 +515,7 @@ text = "Type !fire angle power to launch your ball
 angle: 0-360
 power 0-100"
 
-[node name="JoinNextRound" type="Label" parent="CanvasLayer/InstructionsContainer/VBoxContainer"]
+[node name="JoinNextRound" type="Label" parent="UI/InstructionsContainer/VBoxContainer"]
 self_modulate = Color(1, 1, 1, 0.537255)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("4_2hea8")
@@ -523,5 +523,5 @@ theme_override_font_sizes/font_size = 31
 text = "Type !join to play!"
 
 [connection signal="body_entered" from="Target" to="." method="_on_target_body_entered"]
-[connection signal="finished" from="CanvasLayer/Countdown" to="." method="_on_countdown_finished"]
-[connection signal="scene_changing" from="CanvasLayer/InstructionsContainer/VBoxContainer/NavigateToMenuButton" to="." method="_on_navigate_to_menu_button_scene_changing"]
+[connection signal="finished" from="UI/Countdown" to="." method="_on_countdown_finished"]
+[connection signal="scene_changing" from="UI/InstructionsContainer/VBoxContainer/NavigateToMenuButton" to="." method="_on_navigate_to_menu_button_scene_changing"]

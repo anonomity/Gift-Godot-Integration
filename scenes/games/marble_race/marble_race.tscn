@@ -234,9 +234,9 @@ curve = SubResource("Curve2D_cllto")
 [node name="Path2D" parent="Walls2" index="0"]
 curve = SubResource("Curve2D_qneh5")
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="UI" type="CanvasLayer" parent="."]
 
-[node name="Overlay" type="MarginContainer" parent="CanvasLayer"]
+[node name="Overlay" type="MarginContainer" parent="UI"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -249,11 +249,13 @@ theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 8
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Overlay"]
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/Overlay"]
 layout_mode = 2
 
-[node name="NavigateToMenuButton" parent="CanvasLayer/Overlay/VBoxContainer" instance=ExtResource("7_cwv11")]
+[node name="NavigateToMenuButton" parent="UI/Overlay/VBoxContainer" instance=ExtResource("7_cwv11")]
 layout_mode = 2
+
+[connection signal="scene_changing" from="UI/Overlay/VBoxContainer/NavigateToMenuButton" to="." method="_on_navigate_to_menu_button_scene_changing"]
 
 [editable path="EndArea"]
 [editable path="Walls"]

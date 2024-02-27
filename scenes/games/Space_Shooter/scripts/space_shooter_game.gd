@@ -2,8 +2,7 @@ extends Node2D
 
 @onready var mars = $Mars
 @onready var jupiter = $Jupiter
-
-
+@onready var node_ui = $UI
 
 var asteroid = preload("res://scenes/games/Space_Shooter/scenes/asteroid.tscn")
 var binary = false
@@ -14,6 +13,9 @@ var player_obj_arr = []
 
 func _ready() -> void:
 	GameConfigManager.load_config()
+
+	SignalBus.ui_visibility_toggled.connect(_on_ui_visibility_toggled)
+
 	GiftSingleton.viewer_joined.connect(on_viewer_joined)
 	GiftSingleton.viewer_left.connect(on_viewer_left)
 	GiftSingleton.add_game_command("bang",on_bang,1,1)
@@ -75,5 +77,11 @@ static func _filter_non_null(value):
 func _on_navigate_to_menu_button_scene_changing():
 	var active_viewers: Array[String] = []
 	active_viewers.append_array(viewers.values().map(_extract_viewer_name).filter(_filter_non_null))
-	print("Leaving Space Shooter scene with %d viewers" % active_viewers.size())
 	GiftSingleton.set_active_viewers(active_viewers)
+	print("Leaving %s scene with %d viewers" % [
+		get_tree().current_scene.scene_file_path.get_file().get_basename(),
+		GiftSingleton.active_viewers.size()
+	])
+
+func _on_ui_visibility_toggled(ui_visible: bool):
+	node_ui.visible = ui_visible

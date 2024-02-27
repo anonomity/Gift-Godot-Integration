@@ -26,7 +26,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("1_58emc")
 
-[node name="Background" type="TextureRect" parent="."]
+[node name="Background" type="TextureRect" parent="." groups=["Background"]]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

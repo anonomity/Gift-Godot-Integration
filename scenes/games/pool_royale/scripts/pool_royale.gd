@@ -9,11 +9,12 @@ enum GAME_STATE {WAITING, RUNNING, WINNER, PAUSED}
 var state: GAME_STATE = GAME_STATE.WAITING
 
 @onready var viewer_container: Node2D = $ViewerContainer
-@onready var waiting: Label = $CanvasLayer/Waiting
-@onready var countdown: Label = $CanvasLayer/Countdown
-@onready var winner: Label = $CanvasLayer/Winner
-@onready var waiting_list: VBoxContainer = $CanvasLayer/WaitingList
-@onready var dead_list: VBoxContainer = $CanvasLayer/DeadList
+@onready var waiting: Label = $UI/Waiting
+@onready var countdown: Label = $UI/Countdown
+@onready var winner: Label = $UI/Winner
+@onready var waiting_list: VBoxContainer = $UI/WaitingList
+@onready var dead_list: VBoxContainer = $UI/DeadList
+@onready var node_ui = $UI
 
 var viewers: Dictionary = {}
 
@@ -27,14 +28,14 @@ func _ready() -> void:
 
 	GameConfigManager.load_config()
 
+	SignalBus.ui_visibility_toggled.connect(_on_ui_visibility_toggled)
+
 	GiftSingleton.streamer_start.connect(on_streamer_start)
 	GiftSingleton.streamer_wait.connect(on_streamer_wait)
 
 	# Command: !fire 90 100
 	GiftSingleton.add_game_command("fire", on_viewer_fire, 2, 2)
 	GiftSingleton.add_alias("fire", "f")
-
-	SignalBus.transparency_toggled.connect(on_transparency_toggled)
 
 	change_state(GAME_STATE.WAITING)
 	Transition.hide_transition()
@@ -49,10 +50,6 @@ func _process(_delta: float) -> void:
 	if Input.is_action_just_pressed("ui_cancel"):
 		GameConfigManager.save_config()
 		SceneSwitcher.change_scene_to(SceneSwitcher.selection_scene, true, null)
-
-	#TODO: Move to a global shortcut script and/or to command window
-	if Input.is_action_just_pressed("transparent"):
-		SignalBus.emit_transparency_toggled(not get_viewport().transparent_bg)
 
 func change_state(new_state: GAME_STATE) -> void:
 	state = new_state
@@ -146,11 +143,6 @@ func on_last_viewer_active(viewer_name: String) -> void:
 func _on_countdown_finished() -> void:
 	change_state(GAME_STATE.RUNNING)
 
-func on_transparency_toggled(transparent: bool) -> void:
-	for node in get_tree().get_nodes_in_group("Background"):
-		node.visible = not transparent
-		get_viewport().transparent_bg = transparent
-
 func _on_death_area_body_entered(body: Node2D) -> void:
 	if not body.is_in_group("Players"): return
 	Viewers.dead(body.viewer_name)
@@ -179,6 +171,12 @@ func on_streamer_wait() -> void:
 func _on_navigate_to_menu_button_scene_changing():
 	var active_viewers: Array[String] = []
 	active_viewers.append_array(viewers.keys())
-	print("Leaving cannon scene with %d viewers" % active_viewers.size())
 	GiftSingleton.set_active_viewers(active_viewers)
+	print("Leaving %s scene with %d viewers" % [
+		get_tree().current_scene.scene_file_path.get_file().get_basename(),
+		GiftSingleton.active_viewers.size()
+	])
+
+func _on_ui_visibility_toggled(ui_visible: bool):
+	node_ui.visible = ui_visible
 	

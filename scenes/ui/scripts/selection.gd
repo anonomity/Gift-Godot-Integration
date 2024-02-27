@@ -19,8 +19,6 @@ var status_messages = {
 }
 
 func _ready() -> void:
-	get_viewport().transparent_bg = true
-	
 	GameConfigManager.load_config()
 	Viewers.close()
 
@@ -52,11 +50,13 @@ func _ready() -> void:
 
 func on_btn_pressed(scene: PackedScene) -> void:
 	GameConfigManager.save_config()
+	
+	SceneSwitcher.change_scene_to(scene, true)
 
-	Transition.show_transition()
-	await Transition.done
+	#Transition.show_transition()
+	#await Transition.done
 
-	get_tree().change_scene_to_packed(scene)
+	#get_tree().change_scene_to_packed(scene)
 
 func on_status_changed(status_id: int) -> void:
 	status_value.text = status_messages[GiftSingleton.STATUS.keys()[status_id]]

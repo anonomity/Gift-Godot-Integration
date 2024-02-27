@@ -62,6 +62,8 @@ func _ready() -> void:
 	GameConfigManager.load_config()
 	load_preferences()
 
+	SignalBus.ui_visibility_toggled.connect(_on_ui_visibility_toggled)
+
 	GiftSingleton.viewer_joined.connect(on_viewer_joined)
 	GiftSingleton.viewer_left.connect(on_viewer_left)
 	GiftSingleton.moderator_changed.connect(on_moderator_changed)
@@ -249,12 +251,16 @@ func on_viewer_dig(command_info: CommandInfo):
 func _on_navigate_to_menu_button_scene_changing():
 	var active_viewers: Array[String] = []
 	active_viewers.append_array(viewers.values().map(_extract_viewer_name).filter(_filter_non_null))
-	print("Leaving lemmings scene with %d viewers" % active_viewers.size())
 	GiftSingleton.set_active_viewers(active_viewers)
+	print("Leaving %s scene with %d viewers" % [
+		get_tree().current_scene.scene_file_path.get_file().get_basename(),
+		GiftSingleton.active_viewers.size()
+	])
+
+func _on_ui_visibility_toggled(ui_visible: bool):
+	node_ui.visible = ui_visible
 
 func _input(event):
-	if Input.is_action_just_pressed("transparent"):
-		node_ui.visible = !node_ui.visible
 	if Input.is_action_just_pressed("test"):
 		GiftSingleton.chat("TEST", "jackie_codes")
 

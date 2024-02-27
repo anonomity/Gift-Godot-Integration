@@ -18,9 +18,9 @@ position = Vector2(1489, 273)
 planet_type = 1
 sprite = ExtResource("5_yd6uq")
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="UI" type="CanvasLayer" parent="."]
 
-[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer"]
+[node name="MarginContainer" type="MarginContainer" parent="UI"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -31,7 +31,7 @@ theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 8
 
-[node name="NavigateToMenuButton" parent="CanvasLayer/MarginContainer" instance=ExtResource("5_o2rki")]
+[node name="NavigateToMenuButton" parent="UI/MarginContainer" instance=ExtResource("5_o2rki")]
 layout_mode = 2
 
-[connection signal="scene_changing" from="CanvasLayer/MarginContainer/NavigateToMenuButton" to="." method="_on_navigate_to_menu_button_scene_changing"]
+[connection signal="scene_changing" from="UI/MarginContainer/NavigateToMenuButton" to="." method="_on_navigate_to_menu_button_scene_changing"]
