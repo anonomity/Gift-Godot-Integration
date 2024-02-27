@@ -15,7 +15,7 @@ var state: GAME_STATE = GAME_STATE.WAITING
 @onready var waiting_list: VBoxContainer = $CanvasLayer/WaitingList
 @onready var dead_list: VBoxContainer = $CanvasLayer/DeadList
 
-var viewer_avatars: Dictionary = {}
+var viewers: Dictionary = {}
 
 func _ready() -> void:
 	Viewers.viewer_active.connect(on_viewer_active)
@@ -38,6 +38,12 @@ func _ready() -> void:
 
 	change_state(GAME_STATE.WAITING)
 	Transition.hide_transition()
+	
+	var active_viewers = GiftSingleton.active_viewers
+	GiftSingleton.active_viewers = []
+	
+	for viewer in active_viewers:
+		spawn_viewer(viewer)
 
 func _process(_delta: float) -> void:
 	if Input.is_action_just_pressed("ui_cancel"):
@@ -87,24 +93,24 @@ func fire_viewer(viewer_name: String, angle: float, power: float) -> void:
 
 	var impulse: Vector2 = Vector2.RIGHT.rotated(-deg_to_rad(angle))
 	impulse *= clamp(remap(power, 0.0, 100.0, 0.0, 4000.0), 0.0, 4000.0)
-	viewer_avatars[viewer_name].call_deferred("apply_central_impulse", impulse)
+	viewers[viewer_name].call_deferred("apply_central_impulse", impulse)
 
 func spawn_viewer(viewer_name: String) -> void:
-	if viewer_avatars.has(viewer_name): return
+	if viewers.has(viewer_name): return
 
 	var instance: RigidBody2D = player_scene.instantiate()
 	instance.viewer_name = viewer_name
 	viewer_container.call_deferred("add_child", instance)
-	viewer_avatars[viewer_name] = instance
+	viewers[viewer_name] = instance
 	await instance.ready
 	instance.global_position = Vector2(randf_range(150, 1850), randf_range(100, 900))
 	push_bullet(instance)
 
 func despawn_viewer(viewer_name: String) -> void:
-	if not viewer_avatars.has(viewer_name): return
+	if not viewers.has(viewer_name): return
 	prints("despawn", viewer_name)
-	viewer_avatars[viewer_name].queue_free()
-	viewer_avatars.erase(viewer_name)
+	viewers[viewer_name].queue_free()
+	viewers.erase(viewer_name)
 
 func push_bullet(obj: RigidBody2D) -> void:
 	var push_vec: Vector2 = obj.global_transform.x.rotated(deg_to_rad(randi_range(0, 360)))
@@ -170,5 +176,9 @@ func on_streamer_start(arg_arr : PackedStringArray) -> void:
 func on_streamer_wait() -> void:
 	change_state(GAME_STATE.WAITING)
 
-
-
+func _on_navigate_to_menu_button_scene_changing():
+	var active_viewers: Array[String] = []
+	active_viewers.append_array(viewers.keys())
+	print("Leaving cannon scene with %d viewers" % active_viewers.size())
+	GiftSingleton.set_active_viewers(active_viewers)
+	

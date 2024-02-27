@@ -2,14 +2,10 @@ extends Node2D
 
 @export var marble: PackedScene = preload("res://scenes/marble/marble.tscn")
 
-#var total_not_typed = 0
-#var total_infered := 0
-#var total_typed: int = 0
-#
-#var str: String = ""
-
 @onready var viewer_container: Node2D = $ViewerContainer
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
+
+var viewers: Dictionary = {}
 
 func _ready() -> void:
 	GameConfigManager.load_config()
@@ -21,6 +17,12 @@ func _ready() -> void:
 	SignalBus.transparency_toggled.connect(on_transparency_toggled)
 
 	Transition.hide_transition()
+	
+	var active_viewers = GiftSingleton.active_viewers
+	GiftSingleton.active_viewers = []
+	
+	for viewer in active_viewers:
+		spawn_viewer(viewer)
 
 func _process(delta: float) -> void:
 	if Input.is_action_just_pressed("ui_accept"):
@@ -71,3 +73,9 @@ func on_transparency_toggled(transparent: bool) -> void:
 	for node in get_tree().get_nodes_in_group("Background"):
 		node.visible = not transparent
 		get_viewport().transparent_bg = transparent
+
+func _on_navigate_to_menu_button_scene_changing():
+	var active_viewers: Array[String] = []
+	active_viewers.append_array(viewers.keys())
+	print("Leaving cannon scene with %d viewers" % active_viewers.size())
+	GiftSingleton.set_active_viewers(active_viewers)

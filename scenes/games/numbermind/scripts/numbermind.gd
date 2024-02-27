@@ -1,7 +1,7 @@
 extends Node2D
 
-@onready var results = $Results
-@onready var instructions = $Instructions
+@onready var results = %Results
+@onready var instructions = %Instructions
 
 var secret: String
 var length: int = 4
@@ -72,3 +72,9 @@ func on_transparency_toggled(transparent: bool) -> void:
 	for node in get_tree().get_nodes_in_group("Background"):
 		node.visible = not transparent
 		get_viewport().transparent_bg = transparent
+
+func _on_navigate_to_menu_button_scene_changing():
+	print("Leaving %s scene with %d viewers" % [
+		get_tree().current_scene.scene_file_path.get_file().get_basename(),
+		GiftSingleton.active_viewers
+	])
