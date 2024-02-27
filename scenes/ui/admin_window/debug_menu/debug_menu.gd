@@ -1,4 +1,3 @@
-@tool
 class_name AdminWindowDebugMenu extends VBoxContainer
 
 @onready var toggle_restart_with_active_viewers: CheckButton = $ToggleRestartWithActiveViewers
