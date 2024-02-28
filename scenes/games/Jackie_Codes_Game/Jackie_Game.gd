@@ -384,6 +384,15 @@ func _on_navigate_to_menu_button_scene_changing():
 func _on_ui_visibility_toggled(ui_visible: bool):
 	node_ui.visible = ui_visible
 
+func clear_viewers(all: bool = true):
+	if all:
+		for viewer in viewers.values():
+			viewer.player.queue_free()
+		viewers.clear()
+	else:
+		# TODO: implement clear gone
+		pass
+
 func _input(event):
 	if Input.is_action_just_pressed("test"):
 		GiftSingleton.chat("TEST", "jackie_codes")

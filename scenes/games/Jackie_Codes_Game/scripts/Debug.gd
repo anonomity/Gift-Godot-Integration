@@ -30,3 +30,10 @@ func _on_add_top_pressed():
 
 func _on_remove_top_pressed():
 	game_node.set_top(viewer_name, false)
+
+
+func _on_clear_gone_pressed():
+	game_node.clear_viewers(false)
+
+func _on_clear_all_pressed():
+	game_node.clear_viewers(true)
