@@ -80,19 +80,19 @@ func _ready() -> void:
 	var active_viewers = GiftSingleton.active_viewers
 	GiftSingleton.active_viewers = []
 
-	for viewer in active_viewers:
-		spawn_viewer(viewer)
-
 	var mods = await GiftSingleton.get_mods()
 	var vips = await GiftSingleton.get_vips()
 
 	preferences.mods.clear()
-	preferences.mods.append_array(mods)
+	preferences.mods.append_array(mods.map(sanitize_name))
 
 	preferences.vips.clear()
-	preferences.vips.append_array(vips)
+	preferences.vips.append_array(vips.map(sanitize_name))
 
 	save_preferences()
+
+	for viewer in active_viewers:
+		spawn_viewer(viewer)
 
 func load_preferences():
 	var dict = GamePreferencesHelper.load_preferences(GamePreferencesHelper.suggest_name())

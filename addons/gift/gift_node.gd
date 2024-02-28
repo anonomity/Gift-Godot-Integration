@@ -497,7 +497,7 @@ static func map_user_name(user_data: Dictionary) -> String:
 static func filter_nonempty_string(str: String) -> bool:
 	return str != ""
 
-func get_mods(channel: String=""):
+func get_mods(channel: String = "") -> Array[String]:
 	if channel == "":
 		var keys = channels.keys()
 		if keys.size() < 1:
@@ -522,9 +522,11 @@ func get_mods(channel: String=""):
 	if data == null:
 		return []
 
-	return data.map(map_user_name).filter(filter_nonempty_string)
+	var array: Array[String] = []
+	array.append_array(data.map(map_user_name).filter(filter_nonempty_string))
+	return array
 
-func get_vips(channel: String=""):
+func get_vips(channel: String = "") -> Array[String]:
 	if channel == "":
 		var keys = channels.keys()
 		if keys.size() < 1:
@@ -549,7 +551,9 @@ func get_vips(channel: String=""):
 	if data == null:
 		return []
 
-	return data.map(map_user_name).filter(filter_nonempty_string)
+	var array: Array[String] = []
+	array.append_array(data.map(map_user_name).filter(filter_nonempty_string))
+	return array
 
 func request_api(api_path: String, query_params: Dictionary={}, request_body=null, request_method=HTTPClient.METHOD_GET) -> HelixApiResponse:
 	var request: HTTPRequest = HTTPRequest.new()
