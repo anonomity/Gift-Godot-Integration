@@ -107,9 +107,11 @@ func start() -> void:
 	var broadcaster_id = await get_user_id(channel_id)
 
 	var mods = await GiftSingleton.get_mods()
+	print("Found %d moderators: %s" % [mods.size(), mods])
 	cache.data["mods"] = mods
 
 	var vips = await GiftSingleton.get_vips()
+	print("Found %d VIPs: %s" % [mods.size(), mods])
 	cache.data["vips"] = vips
 
 	cache.save()
