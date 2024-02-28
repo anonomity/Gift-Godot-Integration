@@ -227,9 +227,9 @@ func add_viewer(display_name: String):
 	viewer_joined.emit(display_name)
 
 func remove_viewer_command(cmd_info: CommandInfo) -> void:
-	remove_viewr(cmd_info.sender_data.tags["display-name"])
+	remove_viewer(cmd_info.sender_data.tags["display-name"])
 
-func remove_viewr(display_name: String):
+func remove_viewer(display_name: String):
 	viewer_left.emit(display_name)
 
 func streamer_reset_command(_cmd_info: CommandInfo) -> void:
