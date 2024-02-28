@@ -64,7 +64,9 @@ signal event(type, data)
 	"chat:edit",
 	"chat:read",
 	"moderation:read",
-	"channel:read:vips"
+	"channel:read:vips",
+	"channel:read:subscriptions",
+	"bits:read"
 ]
 
 @export_category("Emotes/Badges")
@@ -151,21 +153,16 @@ func _init():
 			if (!DirAccess.dir_exists_absolute(disk_cache_path + "/" + key)):
 				DirAccess.make_dir_recursive_absolute(disk_cache_path + "/" + key)
 
-static func dict_get_or_add(dict: Dictionary, key: String, default):
-	if not dict.has(key):
-		dict[key] = default
-	return dict[key]
-
-func get_cache(channel_name: String) -> JsonManager:
+func get_cache(service: String, channel_name: String) -> JsonManager:
 	var channel_id = channel_name.to_lower()
-	var cache: JsonManager = dict_get_or_add(channel_caches, channel_id, JsonManager.new("cache/" + channel_id + ".json"))
+	var cache: JsonManager = channel_caches.get_or_add(channel_id, JsonManager.new("cache/" + service + "." + channel_id + ".json"))
 	if cache.data == null:
 		cache.data = {}
 	return cache
 
 func get_user_id(display_name: String) -> String:
 	var user_name = display_name.to_lower()
-	var cache = get_cache(user_name)
+	var cache = get_cache("twitch", user_name)
 	if not cache.data.has("user_data"):
 		cache.data["user_data"] = await user_data_by_name(user_name)
 		cache.save()
@@ -497,7 +494,7 @@ static func map_user_name(user_data: Dictionary) -> String:
 static func filter_nonempty_string(str: String) -> bool:
 	return str != ""
 
-func get_mods(channel: String = "") -> Array[String]:
+func get_moderators(channel: String="", force: bool=false) -> Array[String]:
 	if channel == "":
 		var keys = channels.keys()
 		if keys.size() < 1:
@@ -505,6 +502,13 @@ func get_mods(channel: String = "") -> Array[String]:
 			return []
 
 		channel = keys[0]
+
+	var cache = get_cache("twitch", channel)
+	if !force and cache.data.has("moderators"):
+		print("Cache hit on moderators channel=%s" % [channel])
+		var array: Array[String] = []
+		array.append_array(cache.data.get("moderators"))
+		return array
 
 	var broadcaster_id = await get_user_id(channel)
 	var response: HelixApiResponse = await request_api("moderation/moderators", {
@@ -526,7 +530,7 @@ func get_mods(channel: String = "") -> Array[String]:
 	array.append_array(data.map(map_user_name).filter(filter_nonempty_string))
 	return array
 
-func get_vips(channel: String = "") -> Array[String]:
+func get_vips(channel: String="", force: bool=false) -> Array[String]:
 	if channel == "":
 		var keys = channels.keys()
 		if keys.size() < 1:
@@ -534,6 +538,13 @@ func get_vips(channel: String = "") -> Array[String]:
 			return []
 
 		channel = keys[0]
+
+	var cache = get_cache("twitch", channel)
+	if !force and cache.data.has("vips"):
+		print("Cache hit on vips channel=%s" % [channel])
+		var array: Array[String] = []
+		array.append_array(cache.data.get("vips"))
+		return array
 
 	var broadcaster_id = await get_user_id(channel)
 	var response: HelixApiResponse = await request_api("channels/vips", {
@@ -554,6 +565,95 @@ func get_vips(channel: String = "") -> Array[String]:
 	var array: Array[String] = []
 	array.append_array(data.map(map_user_name).filter(filter_nonempty_string))
 	return array
+
+func get_bits_leaderboard(channel: String="", period: String="week", force: bool=false) -> Dictionary:
+	if channel == "":
+		var keys = channels.keys()
+		if keys.size() < 1:
+			printerr("No channel")
+			return {}
+
+		channel = keys[0]
+
+	var cache = get_cache("twitch", channel)
+	if !force and cache.data.has("bits_leaderboard"):
+		var cache_level1 = cache.data.get("bits_leaderboard", {})
+		if cache_level1.has(period):
+			print("Cache hit on bits_leaderboard period=%s channel=%s" % [period, channel])
+			return cache_level1.get(period, {})
+
+	var broadcaster_id = await get_user_id(channel)
+
+	var datetime_now = Time.get_datetime_string_from_system(true) + "Z"
+	var response: HelixApiResponse = await request_api("bits/leaderboard", {
+		"count": 100,
+		"period": period,
+		"started_at": datetime_now
+	})
+
+	var response_code = response.response_code
+	if response_code != HTTPClient.RESPONSE_OK:
+		return {}
+
+	var data = response.response_body
+	data["period"] = period
+	return data
+
+func get_subscriptions(channel: String="", force: bool=false) -> Array[Dictionary]:
+	if channel == "":
+		var keys = channels.keys()
+		if keys.size() < 1:
+			printerr("No channel")
+			return []
+
+		channel = keys[0]
+
+	var cache = get_cache("twitch", channel)
+	if !force and cache.data.has("subscriptions"):
+		print("Cache hit on subscriptions channel=%s" % [channel])
+		var array: Array[Dictionary] = []
+		array.append_array(cache.data.get("subscriptions"))
+		return array
+
+	var subscriptions: Array[Dictionary] = []
+	var broadcaster_id = await get_user_id(channel)
+	var has_next_page: bool = true
+	var next_page_cursor: String = ""
+	while has_next_page:
+		var conditions: Dictionary = {
+			"broadcaster_id": broadcaster_id,
+			"first": "100"
+		}
+
+		if next_page_cursor != "":
+			conditions["after"] = next_page_cursor
+
+		var response: HelixApiResponse = await request_api("subscriptions", conditions)
+
+		if response.response_code != HTTPClient.RESPONSE_OK:
+			break
+
+		var body = response.response_body
+		if not body.has("data"):
+			break
+
+		var data = body.get("data") as Array
+		if data == null:
+			break
+
+		subscriptions.append_array(data)
+
+		if not body.has("pagination"):
+			break
+
+		var pagination = body["pagination"]
+		if not pagination.has("cursor"):
+			break
+
+		next_page_cursor = pagination["cursor"]
+		has_next_page = (next_page_cursor != "")
+
+	return subscriptions
 
 func request_api(api_path: String, query_params: Dictionary={}, request_body=null, request_method=HTTPClient.METHOD_GET) -> HelixApiResponse:
 	var request: HTTPRequest = HTTPRequest.new()
@@ -597,7 +697,7 @@ func request_api(api_path: String, query_params: Dictionary={}, request_body=nul
 	var response_body: PackedByteArray = reply[3]
 	match response_code:
 		HTTPClient.RESPONSE_OK:
-			print_debug("Successfully requested %s" % api_path)
+			print("Successfully requested %s" % api_path)
 			var response_raw_json = response_body.get_string_from_utf8()
 			var parser = JSON.new()
 			if parser.parse(response_raw_json):
@@ -608,7 +708,7 @@ func request_api(api_path: String, query_params: Dictionary={}, request_body=nul
 			printerr("Bad request to %s: %s" % [api_path, response_body.get_string_from_utf8() if response_body != null and response_body.size() > 0 else ""])
 			return HelixApiResponse.new(response_code, {})
 		HTTPClient.RESPONSE_UNAUTHORIZED:
-			print_debug("Unauthorized access to %s: %s" % [api_path, response_body.get_string_from_utf8() if response_body != null and response_body.size() > 0 else ""])
+			printerr("Unauthorized access to %s: %s" % [api_path, response_body.get_string_from_utf8() if response_body != null and response_body.size() > 0 else ""])
 			return HelixApiResponse.new(response_code, {})
 		_:
 			printerr("Unexpected response code %d when fetching api %s: %s" % [response_code, api_path, response_body.get_string_from_utf8() if response_body != null and response_body.size() > 0 else ""])

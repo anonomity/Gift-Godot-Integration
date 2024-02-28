@@ -5,6 +5,12 @@ signal viewer_left(name)
 signal viewers_reset()
 
 signal moderator_changed(user_name: String, added: bool)
+signal vip_changed(user_name: String, added: bool)
+
+signal subscription(user_name: String, length: int)
+signal subscription_gifted(user_name: String, gifter: String, length: int)
+
+signal cheer(user_name: String, bits: int)
 
 signal streamer_start(args: Array)
 signal streamer_wait()
@@ -54,11 +60,6 @@ func set_active_viewers(viewers: Array[String]) -> void:
 ## private
 ##
 
-static func dict_get_or_add(dict: Dictionary, key: String, default):
-	if not dict.has(key):
-		dict[key] = default
-	return dict[key]
-
 func change_scene_to_setup():
 	get_tree().change_scene_to_packed(setup_scene)
 
@@ -100,25 +101,44 @@ func start() -> void:
 	# await connect_to_eventsub()
 
 	var channel_id = initial_channel.to_lower()
-	var cache: JsonManager = dict_get_or_add(channel_caches, channel_id, JsonManager.new("cache/" + channel_id + ".json"))
-	if cache.data == null:
-		cache.data = {}
+	var cache = get_cache("twitch", channel_id)
 
 	var broadcaster_id = await get_user_id(channel_id)
 
-	var mods = await GiftSingleton.get_mods()
-	print("Found %d moderators: %s" % [mods.size(), mods])
-	cache.data["mods"] = mods
+	var moderators = await GiftSingleton.get_moderators(channel_id, true)
+	print("Found %d moderators: %s" % [moderators.size(), moderators])
+	cache.data["moderators"] = moderators
 
-	var vips = await GiftSingleton.get_vips()
-	print("Found %d VIPs: %s" % [mods.size(), mods])
+	var vips = await GiftSingleton.get_vips(channel_id, true)
+	print("Found %d VIPs: %s" % [vips.size(), vips])
 	cache.data["vips"] = vips
+
+	var bits_leaderboard = await GiftSingleton.get_bits_leaderboard(channel_id, "week", true)
+	print("Found %d leaderboard entries" % [bits_leaderboard.total])
+	cache.data["bits_leaderboard"] = {
+		bits_leaderboard.get("period"): bits_leaderboard
+	}
+
+	var subscriptions = await GiftSingleton.get_subscriptions(channel_id, true)
+	print("Found %d subscriptions" % [subscriptions.size()])
+	cache.data["subscriptions"] = subscriptions
 
 	cache.save()
 
 	self.event.connect(_on_event)
 	await subscribe_event("channel.moderator.add", 1, {"broadcaster_user_id": broadcaster_id})
 	await subscribe_event("channel.moderator.remove", 1, {"broadcaster_user_id": broadcaster_id})
+	await subscribe_event("channel.cheer", 1, {"broadcaster_user_id": broadcaster_id})
+	await subscribe_event("channel.subscribe", 1, {"broadcaster_user_id": broadcaster_id})
+	await subscribe_event("channel.subscription.end", 1, {"broadcaster_user_id": broadcaster_id})
+	await subscribe_event("channel.subscription.gift", 1, {"broadcaster_user_id": broadcaster_id})
+
+	for mod in moderators:
+		moderator_changed.emit(mod, true)
+
+	for vip in vips:
+		vip_changed.emit(vip, true)
+
 	#await subscribe_event("channel.vip.add", 1, {"broadcaster_user_id": broadcaster_id})
 	#await subscribe_event("channel.vip.remove", 1, {"broadcaster_user_id": broadcaster_id})
 
@@ -170,27 +190,34 @@ func start() -> void:
 
 func _on_event(type: String, data: Dictionary):
 	var current_channel = channels.keys()[0]
-	var cache = get_cache(current_channel)
+	var cache = get_cache("twitch", current_channel)
 	match type:
 		"channel.moderator.add":
 			if not data.has("user_login"): print_debug("Bad event %s, missing user_login key" % [type])
 			var user_name = data["user_login"]
-			var mods = cache.data["mods"]
-			var index = mods.find(user_name)
+			var moderators = cache.data["moderators"]
+			var index = moderators.find(user_name)
 			if index < 0:
-				mods.append(user_name)
+				moderators.append(user_name)
 				cache.save()
 			moderator_changed.emit(user_name, true)
 		"channel.moderator.remove":
 			if not data.has("user_login"): print_debug("Bad event %s, missing user_login key" % [type])
 			var user_name = data["user_login"]
-			var mods = cache.data["mods"]
-			var index = mods.find(user_name)
-			if index > -1:
-				mods.remove_at(index)
+			var moderators = cache.data["moderators"]
+			var index = moderators.find(user_name)
+			if index > - 1:
+				moderators.remove_at(index)
 				cache.save()
 			moderator_changed.emit(user_name, false)
-			
+		"channel.cheer":
+			pass
+		"channel.subscribe":
+			pass
+		"channel.subscription.end":
+			pass
+		"channel.subscription.gift":
+			pass
 
 func emit_status(new_status: STATUS) -> void:
 	status.emit(new_status)

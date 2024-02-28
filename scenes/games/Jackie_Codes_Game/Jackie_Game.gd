@@ -20,32 +20,27 @@ var preferences: JackieCodesGamePreferences = JackieCodesGamePreferences.new()
 var viewers: Dictionary = {}
 
 class JackieCodesGamePreferences:
-	var bits: Array[String] = []
-	var gifters: Array[String] = []
+	var bits: Array[Dictionary] = []
+	var gifters: Dictionary = {}
 	var jail: Array[String] = []
-	var mods: Array[String] = []
+	var moderators: Dictionary = {}
 	var top: Array[String] = []
-	var vips: Array[String] = []
-
-	static func dict_get_or_add(dict: Dictionary, key: String, default):
-		if not dict.has(key):
-			dict[key] = default
-		return dict[key]
+	var vips: Dictionary = {}
 
 	static func from_dictionary(dict: Dictionary) -> JackieCodesGamePreferences:
 		var preferences = JackieCodesGamePreferences.new()
 		preferences.bits.clear()
-		preferences.bits.append_array(dict_get_or_add(dict, "bits", []))
+		preferences.bits.append_array(dict.get_or_add("bits", []))
 		preferences.gifters.clear()
-		preferences.gifters.append_array(dict_get_or_add(dict, "gifters", []))
+		preferences.gifters = dict.get_or_add("gifters", {})
 		preferences.jail.clear()
-		preferences.jail.append_array(dict_get_or_add(dict, "jail", []))
-		preferences.mods.clear()
-		preferences.mods.append_array(dict_get_or_add(dict, "mods", []))
+		preferences.jail.append_array(dict.get_or_add("jail", []))
+		preferences.moderators.clear()
+		preferences.moderators = dict.get_or_add("moderators", {})
 		preferences.top.clear()
-		preferences.top.append_array(dict_get_or_add(dict, "top", []))
+		preferences.top.append_array(dict.get_or_add("top", []))
 		preferences.vips.clear()
-		preferences.vips.append_array(dict_get_or_add(dict, "vips", []))
+		preferences.vips = dict.get_or_add("vips", {})
 		return preferences
 
 	func to_dictionary() -> Dictionary:
@@ -53,7 +48,7 @@ class JackieCodesGamePreferences:
 		dict["bits"] = bits
 		dict["gifters"] = gifters
 		dict["jail"] = jail
-		dict["mods"] = mods
+		dict["moderators"] = moderators
 		dict["top"] = top
 		dict["vips"] = vips
 		return dict
@@ -68,11 +63,13 @@ func _ready() -> void:
 
 	GiftSingleton.viewer_joined.connect(on_viewer_joined)
 	GiftSingleton.viewer_left.connect(on_viewer_left)
-	GiftSingleton.moderator_changed.connect(on_moderator_changed)
-	
+	GiftSingleton.moderator_changed.connect(on_twitch_moderator_changed)
+	# Disabled until it can be tested
+	#GiftSingleton.subscription_gifted.connect(on_twitch_subscription_gifted)
+
 	GiftSingleton.add_game_command("jump", on_viewer_jump)
 	GiftSingleton.add_game_command("dig", on_viewer_dig)
-	
+
 	GlobalTilemap.set_terrain_arr(tile_map.get_used_cells(0))
 
 	Transition.hide_transition()
@@ -80,19 +77,84 @@ func _ready() -> void:
 	var active_viewers = GiftSingleton.active_viewers
 	GiftSingleton.active_viewers = []
 
-	var mods = await GiftSingleton.get_mods()
+	var moderators = await GiftSingleton.get_moderators()
 	var vips = await GiftSingleton.get_vips()
+	var twitch_subscriptions = await GiftSingleton.get_subscriptions()
+	var bits_leaderboard_for_period = await GiftSingleton.get_bits_leaderboard()
+	var bits_leaderboard_data = bits_leaderboard_for_period.get("data", [])
+	var bits_leaderboard: Array = bits_leaderboard_data.map(_reduce_bits_leaderboard_entry).filter(_filter_nonempty_dictionary)
+	bits_leaderboard.sort_custom(_sort_bits_leaderboard_entry)
 
-	preferences.mods.clear()
-	preferences.mods.append_array(mods.map(sanitize_name))
+	preferences.bits.clear()
+	preferences.bits.append_array(bits_leaderboard)
 
-	preferences.vips.clear()
-	preferences.vips.append_array(vips.map(sanitize_name))
+	var twitch_moderators = preferences.moderators.get_or_add("twitch", []) as Array
+	twitch_moderators.clear()
+	twitch_moderators.append_array(moderators.map(sanitize_name))
+
+	var twitch_vips = preferences.vips.get_or_add("twitch", []) as Array
+	twitch_vips.clear()
+	twitch_vips.append_array(vips.map(sanitize_name))
+
+	var twitch_gifter_lookup: Dictionary = {}
+	for subscription in twitch_subscriptions:
+		var is_gift = subscription.get("is_gift", false)
+		if not is_gift:
+			continue
+		var gifter_search_name = subscription.get("gifter_login", "")
+		if gifter_search_name == "":
+			continue
+		var gifter_entry: Dictionary = twitch_gifter_lookup.get_or_add(gifter_search_name, {"name": gifter_search_name, "gifts": 0})
+		gifter_entry["gifts"] += 1
+
+	var twitch_gifter_array = twitch_gifter_lookup.values()
+	twitch_gifter_array.sort_custom(_sort_gifter)
+	var twitch_gifters = preferences.gifters.get_or_add("twitch", [])
+	twitch_gifters.clear()
+	twitch_gifters.append_array(twitch_gifter_array)
 
 	save_preferences()
 
 	for viewer in active_viewers:
 		spawn_viewer(viewer)
+
+static func _sort_gifter(a: Dictionary, b: Dictionary) -> bool:
+	var gifts_a = a.get("gifts", 0)
+	var gifts_b = b.get("gifts", 0)
+	return gifts_a > gifts_b
+
+static func _reduce_bits_leaderboard_entry(entry: Dictionary) -> Dictionary:
+	if entry.keys().size() == 0:
+		print_debug("Received bad bits leaderboard entry: %s" % [entry])
+		return {}
+
+	var name = entry.get("user_login")
+	if not name:
+		print_debug("Received bad bits leaderboard entry: %s" % [entry])
+		return {}
+
+	return {
+		"score": entry.get("score", 0),
+		"name": name
+	}
+
+static func _filter_gifts(dict: Dictionary) -> bool:
+	return true
+
+static func _filter_nonempty_dictionary(dict: Dictionary) -> bool:
+	return dict.keys().size() > 0
+
+static func _sort_bits_leaderboard_entry(a: Dictionary, b: Dictionary) -> bool:
+	var score_a = a.get("score", 0)
+	var score_b = b.get("score", 0)
+	return score_a > score_b
+
+static func find_index_of_bits_leaderboard_entry(viewer_name: String, leaderboard: Array[Dictionary]) -> int:
+	var search_name = sanitize_name(viewer_name)
+	for index in range(0, leaderboard.size()):
+		if leaderboard[index].get("name", "") == search_name:
+			return index
+	return - 1
 
 func load_preferences():
 	var dict = GamePreferencesHelper.load_preferences(GamePreferencesHelper.suggest_name())
@@ -101,53 +163,58 @@ func load_preferences():
 func save_preferences():
 	GamePreferencesHelper.save_preferences(GamePreferencesHelper.suggest_name(), preferences.to_dictionary())
 
-func set_gifter(viewer_name: String, is_gifter: bool) -> void:
-	var search_name = sanitize_name(viewer_name)
-	var index = preferences.gifters.find(search_name)
-	if !is_gifter and index > - 1:
-		preferences.gifters.remove_at(index)
-		save_preferences()
+func set_gifter(viewer_name: String, is_gifter: bool, persist: bool=true) -> void:
+	if persist:
+		var search_name = sanitize_name(viewer_name)
+		var manual = preferences.gifters.get_or_add("manual", [])
+		var index = manual.find(search_name)
+		if !is_gifter and index > - 1:
+			manual.remove_at(index)
+			save_preferences()
 
-	if is_gifter and index < 0:
-		preferences.gifters.append(search_name)
-		save_preferences()
+		if is_gifter and index < 0:
+			manual.append(search_name)
+			save_preferences()
 
 	# Mark already spawned player as a gifter
 	var spawned_player = get_spawned_player(viewer_name)
 	if spawned_player:
-		spawned_player.set_gifter(is_gifter)
+		spawned_player.set_gifter(is_gifter or self.is_gifter(viewer_name))
 
-func set_moderator(viewer_name: String, is_moderator: bool) -> void:
-	var search_name = sanitize_name(viewer_name)
-	var index = preferences.mods.find(search_name)
-	if !is_moderator and index > - 1:
-		preferences.mods.remove_at(index)
-		save_preferences()
+func set_moderator(viewer_name: String, is_moderator: bool, persist: bool=true) -> void:
+	if persist:
+		var search_name = sanitize_name(viewer_name)
+		var manual = preferences.moderators.get_or_add("manual", [])
+		var index = manual.find(search_name)
+		if !is_moderator and index > - 1:
+			manual.remove_at(index)
+			save_preferences()
 
-	if is_moderator and index < 0:
-		preferences.mods.append(search_name)
-		save_preferences()
+		if is_moderator and index < 0:
+			manual.append(search_name)
+			save_preferences()
 
 	# Mark already spawned player as a moderator
 	var spawned_player = get_spawned_player(viewer_name)
 	if spawned_player:
-		spawned_player.set_moderator(is_moderator)
+		spawned_player.set_moderator(is_moderator or self.is_moderator(viewer_name))
 
-func set_top(viewer_name: String, is_top: bool) -> void:
-	var search_name = sanitize_name(viewer_name)
-	var index = preferences.top.find(search_name)
-	if !is_top and index > - 1:
-		preferences.top.remove_at(index)
-		save_preferences()
+func set_top(viewer_name: String, is_top: bool, persist: bool=true) -> void:
+	if persist:
+		var search_name = sanitize_name(viewer_name)
+		var index = preferences.top.find(search_name)
+		if !is_top and index > - 1:
+			preferences.top.remove_at(index)
+			save_preferences()
 
-	if is_top and index < 0:
-		preferences.top.append(search_name)
-		save_preferences()
+		if is_top and index < 0:
+			preferences.top.append(search_name)
+			save_preferences()
 
 	# Mark already spawned player as a top gifter/bit donor
 	var spawned_player = get_spawned_player(viewer_name)
 	if spawned_player:
-		spawned_player.set_top(is_top)
+		spawned_player.set_top(is_top or self.is_top(viewer_name))
 
 func set_imprisoned(viewer_name: String, is_imprisoned: bool) -> void:
 	var search_name = sanitize_name(viewer_name)
@@ -186,7 +253,7 @@ func spawn_viewer(viewer_name: String):
 	player.init(
 		search_name,
 		is_gifter(search_name),
-		is_mod(search_name),
+		is_moderator(search_name),
 		is_top(viewer_name),
 		tile_map
 	)
@@ -204,24 +271,53 @@ func spawn_viewer(viewer_name: String):
 
 func is_bits(viewer_name: String) -> bool:
 	var search_name = sanitize_name(viewer_name)
-	return preferences.bits.find(search_name) > - 1
+	for entry in preferences.bits:
+		if entry.name == search_name:
+			return true
+	return false
 
 func is_gifter(viewer_name: String) -> bool:
-	var search_name = sanitize_name(viewer_name)
-	return preferences.gifters.find(search_name) > - 1
+	return gifter_rank(viewer_name) > - 1
 
 func is_imprisoned(viewer_name: String) -> bool:
 	var search_name = sanitize_name(viewer_name)
 	return preferences.jail.find(search_name) > - 1
 
-func is_mod(viewer_name: String) -> bool:
+func is_moderator(viewer_name: String) -> bool:
 	var search_name = sanitize_name(viewer_name)
-	return preferences.mods.find(search_name) > - 1
+
+	var moderators = preferences.moderators
+	for platform_moderators in moderators.values():
+		var index = platform_moderators.find(search_name)
+		if index > - 1:
+			return true
+
+	return false
 
 func is_top(viewer_name: String) -> bool:
 	var search_name = sanitize_name(viewer_name)
 	var position = preferences.top.find(search_name)
+	if position > - 1:
+		return true
+
+	position = find_index_of_bits_leaderboard_entry(viewer_name, preferences.bits)
+	if position > - 1:
+		return true
+
+	position = gifter_rank(viewer_name)
 	return position > - 1
+
+func gifter_rank(viewer_name: String) -> int:
+	var search_name = sanitize_name(viewer_name)
+
+	var gifters = preferences.gifters
+	for platform_gifters in gifters.values():
+		for index in range(0, platform_gifters.size()):
+			var gifter = platform_gifters[index]
+			if gifter.get("name") == search_name:
+				return index
+
+	return - 1
 
 func on_viewer_joined(viewer_name: String) -> void:
 	spawn_viewer(viewer_name)
@@ -240,8 +336,34 @@ func on_viewer_jump(command_info: CommandInfo):
 	if player:
 		player.jump()
 
-func on_moderator_changed(user_name: String, added: bool):
-	set_moderator(user_name, added)
+func on_twitch_moderator_changed(user_name: String, added: bool):
+	on_moderator_changed("twitch", user_name, added)
+
+func on_moderator_changed(service: String, user_name: String, added: bool):
+	var search_name = sanitize_name(user_name)
+	var moderators = preferences.moderators.get_or_add(service, [])
+	var index = moderators.find(search_name)
+	if added and index < 0:
+		moderators.append(search_name)
+	elif not added and index > - 1:
+		moderators.remove_at(index)
+	save_preferences()
+	set_moderator(user_name, added, false)
+
+func on_twitch_subscription_gifted(user_name: String, gifter: String, length: int):
+	on_subscription_gifted("twitch", user_name, gifter, length)
+
+func on_subscription_gifted(service: String, user_name: String, gifter: String, length: int):
+	var search_name = sanitize_name(gifter)
+	var gifters = preferences.gifters.get_or_add(service, []) as Array
+	var index = gifter_rank(search_name)
+
+	if index < 0:
+		gifters.append({"name": search_name, "gifts": 0})
+	gifters[index]["gifts"] += 1
+
+	save_preferences()
+	set_gifter(gifter, true, false)
 
 func on_viewer_dig(command_info: CommandInfo):
 	var viewer_name = command_info.sender_data.user
