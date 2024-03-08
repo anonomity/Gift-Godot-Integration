@@ -168,6 +168,9 @@ func on_streamer_wait(cmd_info : CommandInfo) -> void:
 	change_state(GAME_STATE.WAITING)
 
 func _on_target_body_entered(body: Node2D) -> void:
+	if not body is CannonGameBullet:
+		return
+
 	target.activate()
 
 	var viewer_name = body.viewer_name

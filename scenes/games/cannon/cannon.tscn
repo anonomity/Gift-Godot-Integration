@@ -368,49 +368,57 @@ libraries = {
 }
 autoplay = "go_through_loop"
 
-[node name="StaticBody2D" type="StaticBody2D" parent="."]
+[node name="BoundaryBottom" type="StaticBody2D" parent="."]
 position = Vector2(960, 1080)
+collision_layer = 2
+collision_mask = 2
 metadata/_edit_group_ = true
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BoundaryBottom"]
 shape = SubResource("RectangleShape2D_w614r")
 
-[node name="Polygon2D" type="Polygon2D" parent="StaticBody2D"]
+[node name="Polygon2D" type="Polygon2D" parent="BoundaryBottom"]
 color = Color(0.0941176, 0.0941176, 0.0941176, 1)
 polygon = PackedVector2Array(-1368, -32, -1368, 32, 1368, 32, 1368, -32)
 
-[node name="StaticBody2D4" type="StaticBody2D" parent="."]
+[node name="BoundaryTop" type="StaticBody2D" parent="."]
 position = Vector2(960, 0)
+collision_layer = 2
+collision_mask = 2
 metadata/_edit_group_ = true
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D4"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BoundaryTop"]
 shape = SubResource("RectangleShape2D_w614r")
 
-[node name="Polygon2D" type="Polygon2D" parent="StaticBody2D4"]
+[node name="Polygon2D" type="Polygon2D" parent="BoundaryTop"]
 color = Color(0.0941176, 0.0941176, 0.0941176, 1)
 polygon = PackedVector2Array(-1368, -32, -1368, 32, 1368, 32, 1368, -32)
 
-[node name="StaticBody2D2" type="StaticBody2D" parent="."]
+[node name="BoundaryRight" type="StaticBody2D" parent="."]
 position = Vector2(1920, 637)
 rotation = 1.5708
+collision_layer = 2
+collision_mask = 2
 metadata/_edit_group_ = true
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D2"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BoundaryRight"]
 shape = SubResource("RectangleShape2D_w614r")
 
-[node name="Polygon2D" type="Polygon2D" parent="StaticBody2D2"]
+[node name="Polygon2D" type="Polygon2D" parent="BoundaryRight"]
 color = Color(0.0941176, 0.0941176, 0.0941176, 1)
 polygon = PackedVector2Array(-1368, -32, -1368, 32, 1368, 32, 1368, -32)
 
-[node name="StaticBody2D3" type="StaticBody2D" parent="."]
+[node name="BoundaryLeft" type="StaticBody2D" parent="."]
 position = Vector2(0, 637)
 rotation = 1.5708
+collision_layer = 2
+collision_mask = 2
 metadata/_edit_group_ = true
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D3"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BoundaryLeft"]
 shape = SubResource("RectangleShape2D_w614r")
 
-[node name="Polygon2D" type="Polygon2D" parent="StaticBody2D3"]
+[node name="Polygon2D" type="Polygon2D" parent="BoundaryLeft"]
 color = Color(0.0941176, 0.0941176, 0.0941176, 1)
 polygon = PackedVector2Array(-1368, -32, -1368, 32, 1368, 32, 1368, -32)
 

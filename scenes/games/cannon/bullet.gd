@@ -1,3 +1,4 @@
+class_name CannonGameBullet
 extends RigidBody2D
 
 @export var blood_particles: PackedScene = preload("res://scenes/games/pool_royale/blood_particles.tscn")
