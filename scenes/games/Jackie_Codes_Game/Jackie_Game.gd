@@ -10,19 +10,23 @@ var bodies = [
 	preload ("res://scenes/games/Jackie_Codes_Game/scenes/inherited_body_6.tscn")
 ]
 
+const JAIL_RELEASE_INTERVAL_SECONDS: int = 10
+
 @onready var marker_spawn = $spawn
 @onready var player_container = $players
 @onready var node_ui = $UI
 @onready var prison = $prison
 @onready var tile_map = $TileMap
 
+var jail_time_seconds: int = 0
+var jail_release_timer_remaining: float = 0
 var preferences: JackieCodesGamePreferences = JackieCodesGamePreferences.new()
 var viewers: Dictionary = {}
 
 class JackieCodesGamePreferences:
 	var bits: Array[Dictionary] = []
 	var gifters: Dictionary = {}
-	var jail: Array[String] = []
+	var jail: Array[Dictionary] = []
 	var moderators: Dictionary = {}
 	var top: Array[String] = []
 	var vips: Dictionary = {}
@@ -113,10 +117,41 @@ func _ready() -> void:
 	twitch_gifters.clear()
 	twitch_gifters.append_array(twitch_gifter_array)
 
+	var now = int(Time.get_unix_time_from_system())
+	for jail_entry in preferences.jail:
+		var entry_release_time = jail_entry.get("release_time", 1) as int
+		if entry_release_time < 1:
+			# < 1 is the "permanent jail" flag, skip
+			continue
+
+		if entry_release_time < now:
+			preferences.jail.erase(jail_entry)
+
 	save_preferences()
 
 	for viewer in active_viewers:
 		spawn_viewer(viewer)
+
+func _process(delta: float) -> void:
+	jail_release_timer_remaining -= delta
+	if jail_release_timer_remaining < 0:
+		jail_release_timer_remaining = JAIL_RELEASE_INTERVAL_SECONDS
+		
+		var now = int(Time.get_unix_time_from_system())
+		var num_jail_entries = preferences.jail.size()
+		for jail_entry in preferences.jail:
+			var jail_entry_name = jail_entry.get("name", "") as String
+			if jail_entry_name == "":
+				preferences.jail.erase(jail_entry)
+			var jail_release_time = jail_entry.get("release_time", 1) as int
+			if jail_release_time < 1:
+				continue
+			if jail_release_time < now:
+				preferences.jail.erase(jail_entry)
+				set_imprisoned(jail_entry_name, false)
+
+		if not num_jail_entries == preferences.jail.size():
+			save_preferences()
 
 static func _sort_gifter(a: Dictionary, b: Dictionary) -> bool:
 	var gifts_a = a.get("gifts", 0)
@@ -216,21 +251,45 @@ func set_top(viewer_name: String, is_top: bool, persist: bool=true) -> void:
 	if spawned_player:
 		spawned_player.set_top(is_top or self.is_top(viewer_name))
 
+func _get_jail_index(viewer_id: String) -> int:
+	for jail_entry_index in range(0, preferences.jail.size()):
+		var jail_entry = preferences.jail[jail_entry_index]
+		if not jail_entry is Dictionary:
+			continue
+		var entry_name = jail_entry.get("name", "") as String
+		if entry_name == viewer_id:
+			return jail_entry_index
+
+	return -1
+
 func set_imprisoned(viewer_name: String, is_imprisoned: bool) -> void:
 	var search_name = sanitize_name(viewer_name)
-	var index = preferences.jail.find(search_name)
+	var index = _get_jail_index(search_name)
 	if !is_imprisoned and index > - 1:
 		preferences.jail.remove_at(index)
 		save_preferences()
 
-	if is_imprisoned and index < 0:
-		preferences.jail.append(search_name)
+	if is_imprisoned:
+		var release_time = jail_time_seconds
+		if release_time > 0:
+			var now = int(Time.get_unix_time_from_system())
+			release_time += now
+
+		if index < 0:
+			preferences.jail.append({
+				"name": search_name,
+				"release_time": release_time,
+			})
+		else:
+			var jail_entry = preferences.jail[index]
+			jail_entry["release_time"] = release_time
+
 		save_preferences()
 
 	# Mark already spawned player as imprisoned
 	var spawned_player = get_spawned_player(viewer_name)
 	if spawned_player:
-		if is_imprisoned:
+		if is_imprisoned:			
 			spawned_player.transport_to_gulag(prison.global_position)
 		else:
 			spawned_player.release_from_gulag()
@@ -281,7 +340,24 @@ func is_gifter(viewer_name: String) -> bool:
 
 func is_imprisoned(viewer_name: String) -> bool:
 	var search_name = sanitize_name(viewer_name)
-	return preferences.jail.find(search_name) > - 1
+
+	for jail_entry in preferences.jail:
+		if not jail_entry is Dictionary:
+			continue
+		var entry_name = jail_entry.get("name", "") as String
+		if not entry_name == search_name:
+			continue
+		var entry_release_time = jail_entry.get("release_time", 1) as int
+		if entry_release_time < 1:
+			# This is the permanent jail, just return true
+			return true
+		var now = int(Time.get_unix_time_from_system())
+		if entry_release_time < now:
+			# This is the temporary jail, don't update the preferences array in an is_*() function
+			# just short circuit and return false since we matched the viewer name
+			return false
+		
+	return false
 
 func is_moderator(viewer_name: String) -> bool:
 	var search_name = sanitize_name(viewer_name)
@@ -406,4 +482,6 @@ static func _filter_non_null(value):
 	return value != null
 
 static func sanitize_name(viewer_name: String) -> String:
-	return viewer_name.to_lower()
+	if viewer_name == "":
+		return viewer_name
+	return viewer_name.strip_edges().to_lower()

@@ -244,6 +244,25 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "Remove Top 3"
 
+[node name="GulagOptions" type="HBoxContainer" parent="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer"]
+auto_translate_mode = 1
+layout_mode = 2
+
+[node name="LabelJailTime" type="Label" parent="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer/GulagOptions"]
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "A value of 0 is indefinite imprisonment"
+text = "Jail Time (min)"
+horizontal_alignment = 2
+
+[node name="JailTime" type="SpinBox" parent="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer/GulagOptions"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "A value of 0 is indefinite imprisonment"
+max_value = 525960.0
+value = 60.0
+
 [node name="GulagButtons" type="HBoxContainer" parent="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
@@ -278,6 +297,7 @@ text = "Clear Gone"
 [connection signal="pressed" from="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer/GifterButtons/ButtonRemoveGifter" to="UI/MarginContainer/VBoxContainer/Control/DebugPanel" method="_on_remove_gifter_pressed"]
 [connection signal="pressed" from="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer/TopButtons/ButtonAddTop" to="UI/MarginContainer/VBoxContainer/Control/DebugPanel" method="_on_add_top_pressed"]
 [connection signal="pressed" from="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer/TopButtons/ButtonRemoveTop" to="UI/MarginContainer/VBoxContainer/Control/DebugPanel" method="_on_remove_top_pressed"]
+[connection signal="value_changed" from="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer/GulagOptions/JailTime" to="UI/MarginContainer/VBoxContainer/Control/DebugPanel" method="_on_jail_time_value_changed"]
 [connection signal="pressed" from="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer/GulagButtons/ButtonImprison" to="UI/MarginContainer/VBoxContainer/Control/DebugPanel" method="_on_imprison_pressed"]
 [connection signal="pressed" from="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer/GulagButtons/ButtonFree" to="UI/MarginContainer/VBoxContainer/Control/DebugPanel" method="_on_free_pressed"]
 [connection signal="pressed" from="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer/ClearButtons/ButtonClearAll" to="UI/MarginContainer/VBoxContainer/Control/DebugPanel" method="_on_clear_all_pressed"]
