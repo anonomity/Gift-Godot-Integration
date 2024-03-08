@@ -472,26 +472,6 @@ offset_top = -527.0
 offset_right = 1667.0
 offset_bottom = 876.0
 
-[node name="LeaderboardPanel" type="PanelContainer" parent="UI"]
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -512.0
-offset_top = 32.0
-offset_right = -32.0
-offset_bottom = 352.0
-grow_horizontal = 0
-
-[node name="MarginContainer" type="MarginContainer" parent="UI/LeaderboardPanel"]
-layout_mode = 2
-theme_override_constants/margin_left = 8
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 8
-theme_override_constants/margin_bottom = 8
-
-[node name="Leaderboard" parent="UI/LeaderboardPanel/MarginContainer" instance=ExtResource("13_c6w4d")]
-layout_mode = 2
-
 [node name="InstructionsContainer" type="MarginContainer" parent="UI"]
 anchors_preset = 15
 anchor_right = 1.0
@@ -527,6 +507,26 @@ layout_mode = 2
 theme_override_fonts/font = ExtResource("4_2hea8")
 theme_override_font_sizes/font_size = 31
 text = "Type !join to play!"
+
+[node name="LeaderboardPanel" type="PanelContainer" parent="UI"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -512.0
+offset_top = 32.0
+offset_right = -32.0
+offset_bottom = 352.0
+grow_horizontal = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="UI/LeaderboardPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="Leaderboard" parent="UI/LeaderboardPanel/MarginContainer" instance=ExtResource("13_c6w4d")]
+layout_mode = 2
 
 [connection signal="body_entered" from="Target" to="." method="_on_target_body_entered"]
 [connection signal="finished" from="UI/Countdown" to="." method="_on_countdown_finished"]

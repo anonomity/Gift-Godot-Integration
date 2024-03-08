@@ -9,6 +9,9 @@ var entry_lookup: Dictionary = {}
 var entry_nodes: Array[LeaderboardEntry] = []
 var entries: Array = []
 
+func _ready():
+	self.load()
+
 func get_file_name():
 	return "user://leaderboard/" + id + ".leaderboard.json"
 
@@ -63,12 +66,6 @@ func rebuild_entries():
 		node.entry_name = entry[0]
 		node.points = entry[1]
 
-static func compare_entries(a: Array, b: Array):
-	if a[1] > b[1]:
-		return true
-	
-	return a[1] == b[1] and a[2] < b[2]
-
 func save():
 	ensure_save_directory()
 
@@ -78,19 +75,9 @@ func save():
 	if file == null:
 		printerr("Failed to create \"", file_name, "\": ", FileAccess.get_open_error())
 	var json = JSON.new()
-	var json_leaderboard = json.stringify(self.entry_lookup)
+	var indent = "  " if OS.is_debug_build() else ""
+	var json_leaderboard = json.stringify(self.entry_lookup, indent)
 	file.store_string(json_leaderboard)
-
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	#entry_container.remove_child(entry_container.get_child(0))
-	self.load()
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	pass
 
 func add_points(name: String, num_points: int = 1, save = true):
 	if not entry_lookup.has(name):
@@ -106,6 +93,20 @@ func add_points(name: String, num_points: int = 1, save = true):
 		save()
 
 	rebuild_entries()
+
+func _on_button_reset_pressed() -> void:
+	entries.clear()
+	entry_lookup.clear()
+	for entry_node in entry_nodes:
+		entry_node.queue_free()
+	entry_nodes.clear()
+	save()
+
+static func compare_entries(a: Array, b: Array):
+	if a[1] > b[1]:
+		return true
+	
+	return a[1] == b[1] and a[2] < b[2]
 
 static func ensure_save_directory():
 	if not DirAccess.dir_exists_absolute("user://leaderboard"):

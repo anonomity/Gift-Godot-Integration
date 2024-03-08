@@ -11,11 +11,25 @@ thickness = 2
 script = ExtResource("1_l0phv")
 id = "cannon"
 
-[node name="Label" type="Label" parent="."]
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 2
+
+[node name="FakeButtonForCenteringTheLabel" type="Button" parent="HBoxContainer"]
+auto_translate_mode = 1
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
+text = "Reset"
+
+[node name="Label" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
 text = "Leaderboard
 "
 horizontal_alignment = 1
+
+[node name="ButtonReset" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+text = "Reset"
 
 [node name="HSeparator" type="HSeparator" parent="."]
 layout_mode = 2
@@ -32,3 +46,5 @@ size_flags_vertical = 3
 
 [node name="LeaderboardEntry" parent="ScrollContainer/LeaderboardEntries" instance=ExtResource("2_t5xgc")]
 layout_mode = 2
+
+[connection signal="pressed" from="HBoxContainer/ButtonReset" to="." method="_on_button_reset_pressed"]
