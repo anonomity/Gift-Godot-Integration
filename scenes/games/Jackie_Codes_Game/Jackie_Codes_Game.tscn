@@ -251,7 +251,6 @@ layout_mode = 2
 [node name="LabelJailTime" type="Label" parent="UI/MarginContainer/VBoxContainer/Control/DebugPanel/MarginContainer/VBoxContainer/GulagOptions"]
 layout_mode = 2
 size_flags_horizontal = 3
-tooltip_text = "A value of 0 is indefinite imprisonment"
 text = "Jail Time (min)"
 horizontal_alignment = 2
 
