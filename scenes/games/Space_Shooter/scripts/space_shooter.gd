@@ -6,14 +6,11 @@ var speed = 100
 var radius = 100
 var MAX_RADIUS = 130
 
-@onready var barrel_1 = $barrel_1
-@onready var barrel_2 = $barrel_2
-@onready var barrel_1_marker = $barrel_1/barrel_1_marker
-@onready var barrel_2_marker = $barrel_2/barrel_2_marker
+@onready var barrel: Node2D = $barrel
+@onready var barrel_marker: Marker2D = $barrel/barrel_marker
 @onready var can_bang_timer = $can_bang_timer
-var bullet = preload("res://scenes/games/Space_Shooter/scenes/bullet.tscn")
-var barrel
-var barrel_muzzle
+
+const BULLET_SCENE: PackedScene = preload("res://scenes/games/Space_Shooter/scenes/bullet.tscn")
 
 var GM = 100000
 var opposing_planet
@@ -36,15 +33,9 @@ func init(name, _planet):
 	if opposing_planet.planet_type == SpaceGlobals.PLANETS.MARS:
 		add_to_group("JUPITER")
 		GROUP = "JUPITER"
-		barrel = barrel_2
-		barrel_1.hide()
-		barrel_muzzle= barrel_2_marker
 	else:
 		add_to_group("MARS")
 		GROUP = "MARS"
-		barrel = barrel_1
-		barrel_2.hide()
-		barrel_muzzle= barrel_1_marker
 		
 func update_angle(delta):
 	angle_in_radians += deg_to_rad(speed) * delta
@@ -67,29 +58,29 @@ func on_bang(view_name, deg):
 	var radian_to_shoot = 0
 	if deg.size() == 1:
 		radian_to_shoot = deg_to_rad(float(deg[0]))
+		var seconds_remaining = int(can_bang_timer.time_left)
+		if not can_bang and seconds_remaining < 1:
+			# Sometimes the timer doesn't appear to fire
+			can_bang = true
 		if can_bang:
-			var bullet_instance = bullet.instantiate()
-#			barrel_muzzle.global_rotation = radian_to_shoot
-			barrel_muzzle.look_at(opposing_planet.global_position)
+			var bullet_instance: SpaceShooterBullet = BULLET_SCENE.instantiate()
+			barrel.look_at(opposing_planet.global_position)
 			opposing_planet.add_child(bullet_instance)
 			bullet_instance.init(GROUP)
-#			bullet_instance.global_transform = barrel_muzzle.global_transform
-			bullet_instance.transform = barrel_muzzle.transform
-	#		if opposing_planet:
-			
+			bullet_instance.global_transform = barrel.global_transform
+			bullet_instance.global_scale = Vector2(1, 1)
+
 			can_bang = false
 			can_bang_timer.start()
 		else:
-			var msg = "wow "+str(viewer_name) + " the idiot, wait "  + str(int(can_bang_timer.time_left)) + " seconds, OKAY?! "
+			var msg = "wow %s the idiot, wait %d seconds, OKAY?! " % [viewer_name, seconds_remaining]
 			GiftSingleton.chat(msg)	
 	else:
 		var msg = "PUT THE DAMN DEGREES AFTER THE BANG, OK!?>!?! "+str(viewer_name) + " "
 
-
-
-
 func _on_can_bang_timer_timeout():
 	can_bang = true
+	can_bang_timer.stop()
 
 func destroy():
 	print("DEAD")

@@ -25,32 +25,19 @@ offset_left = -27.0
 offset_top = -37.0
 offset_right = 57.0
 offset_bottom = -11.0
-rotation = 0.0139626
 scale = Vector2(1.01, 1.01)
 pivot_offset = Vector2(42, 13)
 text = "pandacodr"
 
-[node name="barrel_1" type="Sprite2D" parent="."]
-position = Vector2(6.14675, -3.05088)
-rotation = -0.63181
+[node name="barrel" type="Sprite2D" parent="."]
 scale = Vector2(11.072, 2.49616)
 texture = ExtResource("3_tskw7")
-offset = Vector2(0.405, 0)
+offset = Vector2(1.5, 0)
 
-[node name="barrel_1_marker" type="Marker2D" parent="barrel_1"]
+[node name="barrel_marker" type="Marker2D" parent="barrel"]
 position = Vector2(0.889711, -0.0651097)
-
-[node name="barrel_2" type="Sprite2D" parent="."]
-position = Vector2(-4.28322, 5.23257)
-rotation = 2.49233
-scale = Vector2(11.072, 2.49615)
-texture = ExtResource("3_tskw7")
-offset = Vector2(0.405, 0)
-
-[node name="barrel_2_marker" type="Marker2D" parent="barrel_2"]
-position = Vector2(0.870092, 0.0286988)
 
 [node name="can_bang_timer" type="Timer" parent="."]
 wait_time = 60.0
 
-[connection signal="timeout" from="can_bang_timer" to="asteroid" method="_on_can_bang_timer_timeout"]
+[connection signal="timeout" from="can_bang_timer" to="." method="_on_can_bang_timer_timeout"]
