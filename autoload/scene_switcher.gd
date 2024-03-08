@@ -1,6 +1,6 @@
 extends Node
 
-@export var selection_scene: PackedScene = preload("res://scenes/ui/selection.tscn")
+@export var selection_scene: PackedScene = load("res://scenes/ui/selection.tscn")
 
 # Private variable
 var _params = null
