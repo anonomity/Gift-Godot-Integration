@@ -81,7 +81,7 @@ func on_bang(view_name, deg):
 			can_bang_timer.start()
 		else:
 			var msg = "wow "+str(viewer_name) + " the idiot, wait "  + str(int(can_bang_timer.time_left)) + " seconds, OKAY?! "
-			GiftSingleton.chat(msg, "jackie_codes")	
+			GiftSingleton.chat(msg)	
 	else:
 		var msg = "PUT THE DAMN DEGREES AFTER THE BANG, OK!?>!?! "+str(viewer_name) + " "
 
