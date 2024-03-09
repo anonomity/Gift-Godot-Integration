@@ -177,24 +177,35 @@ func authenticate(client_id, client_secret) -> void:
 	self.client_id = client_id
 	self.client_secret = client_secret
 	print("Checking token...")
-	var file: FileAccess = FileAccess.open_encrypted_with_pass("user://gift/auth/user_token", FileAccess.READ, client_secret)
-	if file != null and file.get_position() < file.get_length():
-		token = JSON.parse_string(file.get_as_text())
-		if (token.has("scope")&&scopes.size() != 0):
-			if (scopes.size() != token["scope"].size()):
-				get_token()
-				token = await (user_token_received)
-			else:
-				for scope in scopes:
-					if (!token["scope"].has(scope)):
-						get_token()
-						token = await (user_token_received)
-		else:
-			get_token()
-			token = await (user_token_received)
+	var should_authenticate: bool = false
+	#var file: FileAccess = FileAccess.open_encrypted_with_pass("user://gift/auth/user_token", FileAccess.READ, client_secret)
+	var file: FileAccess = FileAccess.open("user://gift/auth/user_token", FileAccess.READ)
+	if file == null or file.get_position() >= file.get_length():
+		should_authenticate = true
 	else:
+		var parser = JSON.new()
+		var result = parser.parse(file.get_as_text())
+		if not result == OK:
+			should_authenticate = true
+		else:
+			token = parser.data
+			if not token is Dictionary:
+				should_authenticate = true
+			elif not token.has("scope"):
+				should_authenticate = true
+			else:
+				var token_scopes = token["scope"]
+				if scopes.size() != token_scopes.size():
+					should_authenticate = true
+				else:
+					for scope in scopes:
+						if not token_scopes.has(scope):
+							should_authenticate = true
+
+	if should_authenticate:
 		get_token()
 		token = await (user_token_received)
+
 	username = await (is_token_valid(token["access_token"]))
 	while (username == ""):
 		print("Token invalid.")
@@ -203,7 +214,6 @@ func authenticate(client_id, client_secret) -> void:
 		username = await (is_token_valid(token["access_token"]))
 	print("Token verified.")
 	user_token_valid.emit()
-	refresh_token()
 
 # Gets a new auth token from Twitch.
 func get_token() -> void:
@@ -250,8 +260,16 @@ func get_token() -> void:
 				var answer = await (request.request_completed)
 				if (!DirAccess.dir_exists_absolute("user://gift/auth")):
 					DirAccess.make_dir_recursive_absolute("user://gift/auth")
-				var file: FileAccess = FileAccess.open_encrypted_with_pass("user://gift/auth/user_token", FileAccess.WRITE, client_secret)
-				var token_data = answer[3].get_string_from_utf8()
+				var json_response_body = answer[3].get_string_from_utf8()
+				var token = JSON.parse_string(json_response_body) as Dictionary
+				assert(token != null, "Invalid token response")
+				var expires_in = token.get("expires_in") as int
+				var now = Time.get_unix_time_from_system()
+				var expires_at = now + expires_in - 100
+				token["expires_at"] = expires_at
+				#var file: FileAccess = FileAccess.open_encrypted_with_pass("user://gift/auth/user_token", FileAccess.WRITE, client_secret)
+				var file: FileAccess = FileAccess.open("user://gift/auth/user_token", FileAccess.WRITE)
+				var token_data = JSON.stringify(token)
 				file.store_string(token_data)
 				request.queue_free()
 				user_token_received.emit(JSON.parse_string(token_data))
@@ -281,18 +299,14 @@ func is_token_valid(token: String) -> String:
 	return ""
 
 func refresh_token() -> void:
-	await (get_tree().create_timer(3600).timeout)
-	if (await (is_token_valid(token["access_token"])) == ""):
-		user_token_invalid.emit()
-		return
-	else:
-		refresh_token()
 	var to_remove: Array[String] = []
 	for entry in eventsub_messages.keys():
 		if (Time.get_ticks_msec() - eventsub_messages[entry] > 600000):
 			to_remove.append(entry)
 	for n in to_remove:
 		eventsub_messages.erase(n)
+	
+	await request_api("https://id.twitch.tv/oauth2/token")
 
 func _process(delta: float) -> void:
 	if (websocket):
@@ -494,23 +508,37 @@ static func map_user_name(user_data: Dictionary) -> String:
 static func filter_nonempty_string(str: String) -> bool:
 	return str != ""
 
+func validate_channel_id(channel: String = "") -> String:
+	var channel_id = channel.strip_edges().to_lower()
+	if not channel_id == "":
+		return channel_id
+
+	var keys = channels.keys()
+	if keys.size() < 1:
+		printerr("No channel")
+		return ""
+	
+	for key in keys:
+		channel_id = key.strip_edges().to_lower()
+		if not channel_id == "":
+			return channel_id
+
+	printerr("All channels are invalid, this realistically should never be hit")
+	return ""
+
 func get_moderators(channel: String="", force: bool=false) -> Array[String]:
-	if channel == "":
-		var keys = channels.keys()
-		if keys.size() < 1:
-			printerr("No channel")
-			return []
+	var channel_id = validate_channel_id(channel)
+	if channel_id == "":
+		return []
 
-		channel = keys[0]
-
-	var cache = get_cache("twitch", channel)
+	var cache = get_cache("twitch", channel_id)
 	if !force and cache.data.has("moderators"):
-		print("Cache hit on moderators channel=%s" % [channel])
+		print("Cache hit on moderators channel=%s" % [channel_id])
 		var array: Array[String] = []
 		array.append_array(cache.data.get("moderators"))
 		return array
 
-	var broadcaster_id = await get_user_id(channel)
+	var broadcaster_id = await get_user_id(channel_id)
 	var response: HelixApiResponse = await request_api("moderation/moderators", {
 		"broadcaster_id": broadcaster_id,
 	})
@@ -531,22 +559,18 @@ func get_moderators(channel: String="", force: bool=false) -> Array[String]:
 	return array
 
 func get_vips(channel: String="", force: bool=false) -> Array[String]:
-	if channel == "":
-		var keys = channels.keys()
-		if keys.size() < 1:
-			printerr("No channel")
-			return []
+	var channel_id = validate_channel_id(channel)
+	if channel_id == "":
+		return []
 
-		channel = keys[0]
-
-	var cache = get_cache("twitch", channel)
+	var cache = get_cache("twitch", channel_id)
 	if !force and cache.data.has("vips"):
-		print("Cache hit on vips channel=%s" % [channel])
+		print("Cache hit on vips channel=%s" % [channel_id])
 		var array: Array[String] = []
 		array.append_array(cache.data.get("vips"))
 		return array
 
-	var broadcaster_id = await get_user_id(channel)
+	var broadcaster_id = await get_user_id(channel_id)
 	var response: HelixApiResponse = await request_api("channels/vips", {
 		"broadcaster_id": broadcaster_id,
 	})
@@ -567,22 +591,18 @@ func get_vips(channel: String="", force: bool=false) -> Array[String]:
 	return array
 
 func get_bits_leaderboard(channel: String="", period: String="week", force: bool=false) -> Dictionary:
-	if channel == "":
-		var keys = channels.keys()
-		if keys.size() < 1:
-			printerr("No channel")
-			return {}
+	var channel_id = validate_channel_id(channel)
+	if channel_id == "":
+		return {}
 
-		channel = keys[0]
-
-	var cache = get_cache("twitch", channel)
+	var cache = get_cache("twitch", channel_id)
 	if !force and cache.data.has("bits_leaderboard"):
 		var cache_level1 = cache.data.get("bits_leaderboard", {})
 		if cache_level1.has(period):
-			print("Cache hit on bits_leaderboard period=%s channel=%s" % [period, channel])
+			print("Cache hit on bits_leaderboard period=%s channel=%s" % [period, channel_id])
 			return cache_level1.get(period, {})
 
-	var broadcaster_id = await get_user_id(channel)
+	var broadcaster_id = await get_user_id(channel_id)
 
 	var datetime_now = Time.get_datetime_string_from_system(true) + "Z"
 	var response: HelixApiResponse = await request_api("bits/leaderboard", {
@@ -600,23 +620,19 @@ func get_bits_leaderboard(channel: String="", period: String="week", force: bool
 	return data
 
 func get_subscriptions(channel: String="", force: bool=false) -> Array[Dictionary]:
-	if channel == "":
-		var keys = channels.keys()
-		if keys.size() < 1:
-			printerr("No channel")
-			return []
+	var channel_id = validate_channel_id(channel)
+	if channel_id == "":
+		return []
 
-		channel = keys[0]
-
-	var cache = get_cache("twitch", channel)
+	var cache = get_cache("twitch", channel_id)
 	if !force and cache.data.has("subscriptions"):
-		print("Cache hit on subscriptions channel=%s" % [channel])
+		print("Cache hit on subscriptions channel=%s" % [channel_id])
 		var array: Array[Dictionary] = []
 		array.append_array(cache.data.get("subscriptions"))
 		return array
 
 	var subscriptions: Array[Dictionary] = []
-	var broadcaster_id = await get_user_id(channel)
+	var broadcaster_id = await get_user_id(channel_id)
 	var has_next_page: bool = true
 	var next_page_cursor: String = ""
 	while has_next_page:
@@ -655,46 +671,86 @@ func get_subscriptions(channel: String="", force: bool=false) -> Array[Dictionar
 
 	return subscriptions
 
-func request_api(api_path: String, query_params: Dictionary={}, request_body=null, request_method=HTTPClient.METHOD_GET) -> HelixApiResponse:
+func encode_form(params: Dictionary) -> String:
+	var encoded = ""
+	var keys = params.keys()
+	for key in keys:
+		if encoded.length() > 0:
+			encoded += "&"
+		var value = params[key]
+		encoded += "%s=%s" % [str(key).uri_encode(), str(value).uri_encode()]
+	return encoded
+
+func request_http(uri: String, query_params: Dictionary = {}, headers: Dictionary = {}, request_body = null, request_method: HTTPClient.Method = HTTPClient.METHOD_GET) -> Dictionary:
 	var request: HTTPRequest = HTTPRequest.new()
 	add_child(request)
 
-	var request_body_text = JSON.new().stringify(request_body) if request_body != null else ""
 	if request_body != null and request_method == HTTPClient.METHOD_GET:
 		request_method = HTTPClient.METHOD_POST
-	var uri = "https://api.twitch.tv/helix/" + api_path
-
+	
+	var request_uri = uri
+	
 	var keys = query_params.keys()
 	if keys.size() > 0:
-		uri += "?"
+		request_uri += "?"
 
-	var query_param_string = ""
-	for key in keys:
-		if query_param_string.length() > 0:
-			query_param_string += "&"
-		var value = query_params[key]
-		query_param_string += key + "=" + str(value)
+	var query_param_string = encode_form(query_params)
+	request_uri += query_param_string
 
-	uri += query_param_string
+	var has_user_agent: bool = false
+	var request_headers: Array[String] = []
+	for header_name in headers.keys():
+		if header_name.to_lower() == "user-agent":
+			has_user_agent = true
+		var header_value = str(headers.get(header_name, ""))
+		request_headers.append("%s: %s" % [header_name, header_value])
+
+	if not has_user_agent:
+		request_headers.append(USER_AGENT)
 
 	request.request(
-		uri,
-		[
-			USER_AGENT,
-			"Authorization: Bearer " + token["access_token"],
-			"Client-Id:" + client_id,
-			"Content-Type: application/json"
-		],
+		request_uri,
+		request_headers,
 		request_method,
-		request_body_text
+		request_body
 	)
 
 	# result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray
 	var reply: Array = await (request.request_completed)
 	request.queue_free()
 
-	var response_code: int = reply[1]
-	var response_body: PackedByteArray = reply[3]
+	return {
+		"result": reply[0],
+		"request_uri": request_uri,
+		"request_headers": request_headers,
+		"request_body": request_body,
+		"request_method": request_method,
+		"response_code": reply[1],
+		"response_headers": reply[2],
+		"response_body": reply[3]
+	}
+
+func request_api(api_path: String, query_params: Dictionary = {}, request_body = null, request_method = HTTPClient.METHOD_GET, fail_on_unauthorized: bool = false) -> HelixApiResponse:
+	var request_body_text = JSON.stringify(request_body) if request_body != null else ""
+	if request_body != null and request_method == HTTPClient.METHOD_GET:
+		request_method = HTTPClient.METHOD_POST
+	var uri = "https://api.twitch.tv/helix/%s" % [api_path]
+
+	var response = await request_http(
+		uri,
+		query_params,
+		{
+			"Authorization": "Bearer %s" % [token["access_token"]],
+			"Client-Id": client_id,
+			"Content-Type": "application/json",
+		},
+		request_body_text,
+		request_method,
+	)
+
+	var response_code = response.get("response_code", 0) as int
+	var response_body = response.get("response_body") as PackedByteArray
+
 	match response_code:
 		HTTPClient.RESPONSE_OK:
 			print("Successfully requested %s" % api_path)
@@ -709,7 +765,10 @@ func request_api(api_path: String, query_params: Dictionary={}, request_body=nul
 			return HelixApiResponse.new(response_code, {})
 		HTTPClient.RESPONSE_UNAUTHORIZED:
 			printerr("Unauthorized access to %s: %s" % [api_path, response_body.get_string_from_utf8() if response_body != null and response_body.size() > 0 else ""])
-			return HelixApiResponse.new(response_code, {})
+			if fail_on_unauthorized:
+				return HelixApiResponse.new(response_code, {})
+			await refresh_token()
+			return await request_api(api_path, query_params, request_body, request_method, true)
 		_:
 			printerr("Unexpected response code %d when fetching api %s: %s" % [response_code, api_path, response_body.get_string_from_utf8() if response_body != null and response_body.size() > 0 else ""])
 			return HelixApiResponse.new(response_code, {})
