@@ -64,6 +64,7 @@ signal event(type, data)
 	"chat:edit",
 	"chat:read",
 	"moderation:read",
+	"channel:moderate",
 	"channel:read:vips",
 	"channel:read:subscriptions",
 	"bits:read"
@@ -239,15 +240,15 @@ func authenticate(client_id, client_secret) -> void:
 	if token_blob.is_empty():
 		should_authenticate = true
 	elif not token_blob.has("scope"):
+		should_authenticate = true
+	else:
+		var token_scopes = token_blob["scope"]
+		if scopes.size() != token_scopes.size():
 			should_authenticate = true
 		else:
-		var token_scopes = token_blob["scope"]
-				if scopes.size() != token_scopes.size():
+			for scope in scopes:
+				if not token_scopes.has(scope):
 					should_authenticate = true
-				else:
-					for scope in scopes:
-						if not token_scopes.has(scope):
-							should_authenticate = true
 
 	if should_authenticate:
 		get_token()
@@ -259,8 +260,8 @@ func authenticate(client_id, client_secret) -> void:
 	while (username == ""):
 		if not await refresh_token():
 			print("Invalid access token and failed to refresh, acquiring new token...")
-		get_token()
-		token = await (user_token_received)
+			get_token()
+			token = await (user_token_received)
 		username = await get_token_user_login()
 	print("Token verified.")
 	user_token_valid.emit()
@@ -337,7 +338,7 @@ func send_response(peer: StreamPeer, response: String, body: PackedByteArray) ->
 func get_token_user_login() -> String:
 	var access_token = token.get("access_token", "") as String
 	if access_token == "":
-	return ""
+		return ""
 
 	var response = await request_http(
 		"https://id.twitch.tv/oauth2/validate",

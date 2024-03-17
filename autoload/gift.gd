@@ -7,6 +7,8 @@ signal viewers_reset()
 signal moderator_changed(user_name: String, added: bool)
 signal vip_changed(user_name: String, added: bool)
 
+signal user_ban_status_changed(user_name: String, until: int, is_banned: bool)
+
 signal subscription(user_name: String, length: int)
 signal subscription_gifted(user_name: String, gifter: String, length: int)
 
@@ -132,6 +134,8 @@ func start() -> void:
 	await subscribe_event("channel.subscribe", 1, {"broadcaster_user_id": broadcaster_id})
 	await subscribe_event("channel.subscription.end", 1, {"broadcaster_user_id": broadcaster_id})
 	await subscribe_event("channel.subscription.gift", 1, {"broadcaster_user_id": broadcaster_id})
+	await subscribe_event("channel.ban", 1, {"broadcaster_user_id": broadcaster_id})
+	await subscribe_event("channel.unban", 1, {"broadcaster_user_id": broadcaster_id})
 
 	for mod in moderators:
 		moderator_changed.emit(mod, true)
@@ -218,6 +222,15 @@ func _on_event(type: String, data: Dictionary):
 			pass
 		"channel.subscription.gift":
 			pass
+		"channel.ban":
+			var user_login = data["user_login"]
+			var is_permanent = data["is_permanent"]
+			var ends_at = data["ends_at"]
+			var until = Time.get_unix_time_from_datetime_string(ends_at) if not is_permanent else 0
+			user_ban_status_changed.emit(user_login, until, true)
+		"channel.unban":
+			var user_login = data["user_login"]
+			user_ban_status_changed.emit(user_login, 0, false)
 
 func emit_status(new_status: STATUS) -> void:
 	status.emit(new_status)

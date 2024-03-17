@@ -10,7 +10,7 @@ var bodies = [
 	preload ("res://scenes/games/Jackie_Codes_Game/scenes/inherited_body_6.tscn")
 ]
 
-const JAIL_RELEASE_INTERVAL_SECONDS: int = 10
+const JAIL_RELEASE_INTERVAL_SECONDS: int = 5
 
 @onready var marker_spawn = $spawn
 @onready var player_container = $players
@@ -22,6 +22,7 @@ var jail_time_seconds: int = 0
 var jail_release_timer_remaining: float = 0
 var preferences: JackieCodesGamePreferences = JackieCodesGamePreferences.new()
 var viewers: Dictionary = {}
+var banned_viewers: Dictionary = {}
 
 class JackieCodesGamePreferences:
 	var bits: Array[Dictionary] = []
@@ -68,6 +69,7 @@ func _ready() -> void:
 	GiftSingleton.viewer_joined.connect(on_viewer_joined)
 	GiftSingleton.viewer_left.connect(on_viewer_left)
 	GiftSingleton.moderator_changed.connect(on_twitch_moderator_changed)
+	GiftSingleton.user_ban_status_changed.connect(on_user_ban_status_changed)
 	# Disabled until it can be tested
 	#GiftSingleton.subscription_gifted.connect(on_twitch_subscription_gifted)
 
@@ -262,18 +264,33 @@ func _get_jail_index(viewer_id: String) -> int:
 
 	return -1
 
-func set_imprisoned(viewer_name: String, is_imprisoned: bool) -> void:
+func set_imprisoned(viewer_name: String, is_imprisoned: bool, specific_time: Variant = null) -> void:
 	var search_name = sanitize_name(viewer_name)
 	var index = _get_jail_index(search_name)
-	if !is_imprisoned and index > - 1:
+	if not is_imprisoned and index > - 1:
 		preferences.jail.remove_at(index)
 		save_preferences()
+	
+	if is_imprisoned and specific_time is int and specific_time < 1:
+		banned_viewers[search_name] = true
+		on_viewer_left(viewer_name)
+		if index > - 1:
+			preferences.jail.remove_at(index)
+			save_preferences()
+		return
+	
+	if not is_imprisoned and banned_viewers.has(search_name):
+		banned_viewers.erase(search_name)
+		on_viewer_joined(viewer_name)
 
 	if is_imprisoned:
 		var release_time = jail_time_seconds
 		if release_time > 0:
 			var now = int(Time.get_unix_time_from_system())
 			release_time += now
+		
+		if specific_time is int:
+			release_time = specific_time
 
 		if index < 0:
 			preferences.jail.append({
@@ -440,6 +457,9 @@ func on_subscription_gifted(service: String, user_name: String, gifter: String, 
 
 	save_preferences()
 	set_gifter(gifter, true, false)
+
+func on_user_ban_status_changed(user_name: String, until: int, is_banned: bool):
+	set_imprisoned(user_name, is_banned, until)
 
 func on_viewer_dig(command_info: CommandInfo):
 	var viewer_name = command_info.sender_data.user
