@@ -113,7 +113,8 @@ var twitch_restarting: bool = false
 
 var channel_caches: Dictionary = {}
 
-const USER_AGENT: String = "User-Agent: GIFT/4.1.4 (Godot Engine)"
+const USER_AGENT_VALUE: String = "GIFT/4.1.4 (Godot Engine)"
+const USER_AGENT: String = "User-Agent: %s" % USER_AGENT_VALUE
 
 enum RequestType {
 	EMOTE,
@@ -172,29 +173,75 @@ func get_user_id(display_name: String) -> String:
 
 	return user_data.id
 
+func load_token_blob() -> Dictionary:
+	var file: FileAccess
+	if is_token_blob_encrypted():
+		file = FileAccess.open_encrypted_with_pass("user://gift/auth/user_token", FileAccess.READ, client_secret)
+	else:
+		file = FileAccess.open("user://gift/auth/user_token", FileAccess.READ)
+
+	if file == null or file.get_position() >= file.get_length():
+		print("No token on disk/empty token file")
+		return {}
+
+	var parser = JSON.new()
+	var result = parser.parse(file.get_as_text())
+	if not result == OK:
+		printerr("Failed to parse token file %d @ %d: %s" % [result, parser.get_error_line(), parser.get_error_message()])
+		return {}
+
+	var token_blob = parser.data
+	if not token_blob is Dictionary:
+		printerr("Expected a dictionary to be in the token file but received %s" % [typeof(parser.data)])
+		return {}
+
+	return token_blob
+
+func save_token_blob() -> void:
+	var file: FileAccess
+	if is_token_blob_encrypted():
+		file = FileAccess.open_encrypted_with_pass("user://gift/auth/user_token", FileAccess.WRITE, client_secret)
+	else:
+		file = FileAccess.open("user://gift/auth/user_token", FileAccess.WRITE)
+
+	var token_json = JSON.stringify(token)
+	file.store_string(token_json)
+
+func is_token_blob_encrypted() -> bool:
+	if not OS.is_debug_build():
+		return true
+
+	var file = FileAccess.open("user://gift/auth/user_token", FileAccess.READ)
+	if file == null or file.get_position() >= file.get_length():
+		return true
+
+	var parser = JSON.new()
+	var result = parser.parse(file.get_as_text())
+	if not result == OK:
+		printerr("Failed to parse token file %d @ %d: %s" % [result, parser.get_error_line(), parser.get_error_message()])
+		return true
+
+	var token_blob = parser.data
+	if not token_blob is Dictionary:
+		printerr("Expected a dictionary to be in the token file but received %s" % [typeof(parser.data)])
+		return true
+
+	return false
+
 # Authenticate to authorize GIFT to use your account to process events and messages.
 func authenticate(client_id, client_secret) -> void:
 	self.client_id = client_id
 	self.client_secret = client_secret
 	print("Checking token...")
+	var token_blob = load_token_blob()
 	var should_authenticate: bool = false
-	#var file: FileAccess = FileAccess.open_encrypted_with_pass("user://gift/auth/user_token", FileAccess.READ, client_secret)
-	var file: FileAccess = FileAccess.open("user://gift/auth/user_token", FileAccess.READ)
-	if file == null or file.get_position() >= file.get_length():
+	
+	if token_blob.is_empty():
 		should_authenticate = true
-	else:
-		var parser = JSON.new()
-		var result = parser.parse(file.get_as_text())
-		if not result == OK:
+	elif not token_blob.has("scope"):
 			should_authenticate = true
 		else:
-			token = parser.data
-			if not token is Dictionary:
-				should_authenticate = true
-			elif not token.has("scope"):
-				should_authenticate = true
-			else:
-				var token_scopes = token["scope"]
+		var token_scopes = token_blob["scope"]
 				if scopes.size() != token_scopes.size():
 					should_authenticate = true
 				else:
@@ -205,13 +252,16 @@ func authenticate(client_id, client_secret) -> void:
 	if should_authenticate:
 		get_token()
 		token = await (user_token_received)
+	else:
+		token = token_blob
 
-	username = await (is_token_valid(token["access_token"]))
+	username = await get_token_user_login()
 	while (username == ""):
-		print("Token invalid.")
+		if not await refresh_token():
+			print("Invalid access token and failed to refresh, acquiring new token...")
 		get_token()
 		token = await (user_token_received)
-		username = await (is_token_valid(token["access_token"]))
+		username = await get_token_user_login()
 	print("Token verified.")
 	user_token_valid.emit()
 
@@ -267,12 +317,10 @@ func get_token() -> void:
 				var now = Time.get_unix_time_from_system()
 				var expires_at = now + expires_in - 100
 				token["expires_at"] = expires_at
-				#var file: FileAccess = FileAccess.open_encrypted_with_pass("user://gift/auth/user_token", FileAccess.WRITE, client_secret)
-				var file: FileAccess = FileAccess.open("user://gift/auth/user_token", FileAccess.WRITE)
-				var token_data = JSON.stringify(token)
-				file.store_string(token_data)
+				self.token = token
+				save_token_blob()
 				request.queue_free()
-				user_token_received.emit(JSON.parse_string(token_data))
+				user_token_received.emit(token)
 				break
 		OS.delay_msec(100)
 
@@ -286,19 +334,42 @@ func send_response(peer: StreamPeer, response: String, body: PackedByteArray) ->
 	peer.put_data(body)
 
 # If the token is valid, returns the username of the token bearer.
-func is_token_valid(token: String) -> String:
-	var request: HTTPRequest = HTTPRequest.new()
-	add_child(request)
-	request.request("https://id.twitch.tv/oauth2/validate", [USER_AGENT, "Authorization: OAuth " + token])
-	var data = await (request.request_completed)
-	request.queue_free()
-	if (data[1] == 200):
-		var payload: Dictionary = JSON.parse_string(data[3].get_string_from_utf8())
-		user_id = payload["user_id"]
-		return payload["login"]
+func get_token_user_login() -> String:
+	var access_token = token.get("access_token", "") as String
+	if access_token == "":
 	return ""
 
-func refresh_token() -> void:
+	var response = await request_http(
+		"https://id.twitch.tv/oauth2/validate",
+		{},
+		{
+			
+			"User-Agent": USER_AGENT_VALUE,
+			"Authorization": "OAuth %s" % [access_token],
+		}
+	)
+	
+	var response_code = response.get("response_code", 0) as int
+	var response_body = response.get("response_body", null) as PackedByteArray
+	if not response_code == 200:
+		printerr("Unable to get authenticated user: %d" % [response_code])
+		return ""
+	
+	if response_body == null:
+		printerr("Invalid response body")
+		return ""
+	
+	var response_body_text = response_body.get_string_from_utf8()
+	var payload = JSON.parse_string(response_body_text)
+	if payload == null:
+		printerr("Failed to parse response body")
+		return ""
+	
+	user_id = payload.get("user_id", "")
+	var login = payload.get("login", "")
+	return login
+
+func refresh_token() -> bool:
 	var to_remove: Array[String] = []
 	for entry in eventsub_messages.keys():
 		if (Time.get_ticks_msec() - eventsub_messages[entry] > 600000):
@@ -306,7 +377,43 @@ func refresh_token() -> void:
 	for n in to_remove:
 		eventsub_messages.erase(n)
 	
-	await request_api("https://id.twitch.tv/oauth2/token")
+	var token_blob = load_token_blob()
+	var refresh_token = token_blob.get("refresh_token", null)
+	if not refresh_token is String:
+		return false
+
+	var response = await request_http(
+		"https://id.twitch.tv/oauth2/token",
+		{},
+		{
+			"User-Agent": "",
+			"Content-Type": "application/x-www-form-urlencoded",
+		},
+		encode_form({
+			"client_id": client_id,
+			"client_secret": client_secret,
+			"grant_type": "refresh_token",
+			"refresh_token": refresh_token,
+		})
+	)
+	
+	var response_body = await response.get("response_body")
+	var response_body_text = response_body.get_string_from_utf8()
+	var new_token_blob = JSON.parse_string(response_body_text) as Dictionary
+	assert(new_token_blob != null, "Invalid token response")
+	var expires_in = new_token_blob.get("expires_in") as int
+	var now = Time.get_unix_time_from_system()
+	var expires_at = now + expires_in - 100
+	new_token_blob["expires_at"] = expires_at
+
+	if not new_token_blob.has("refresh_token"):
+		new_token_blob["refresh_token"] = refresh_token
+
+	token = new_token_blob
+
+	save_token_blob()
+	user_token_received.emit(token)
+	return true
 
 func _process(delta: float) -> void:
 	if (websocket):
@@ -681,7 +788,7 @@ func encode_form(params: Dictionary) -> String:
 		encoded += "%s=%s" % [str(key).uri_encode(), str(value).uri_encode()]
 	return encoded
 
-func request_http(uri: String, query_params: Dictionary = {}, headers: Dictionary = {}, request_body = null, request_method: HTTPClient.Method = HTTPClient.METHOD_GET) -> Dictionary:
+func request_http(uri: String, query_params: Dictionary = {}, headers: Dictionary = {}, request_body: Variant = null, request_method: HTTPClient.Method = HTTPClient.METHOD_GET) -> Dictionary:
 	var request: HTTPRequest = HTTPRequest.new()
 	add_child(request)
 
@@ -712,7 +819,7 @@ func request_http(uri: String, query_params: Dictionary = {}, headers: Dictionar
 		request_uri,
 		request_headers,
 		request_method,
-		request_body
+		"" if request_body == null else request_body
 	)
 
 	# result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray
@@ -731,9 +838,7 @@ func request_http(uri: String, query_params: Dictionary = {}, headers: Dictionar
 	}
 
 func request_api(api_path: String, query_params: Dictionary = {}, request_body = null, request_method = HTTPClient.METHOD_GET, fail_on_unauthorized: bool = false) -> HelixApiResponse:
-	var request_body_text = JSON.stringify(request_body) if request_body != null else ""
-	if request_body != null and request_method == HTTPClient.METHOD_GET:
-		request_method = HTTPClient.METHOD_POST
+	var serialized_request_body = JSON.stringify(request_body) if request_body != null else null
 	var uri = "https://api.twitch.tv/helix/%s" % [api_path]
 
 	var response = await request_http(
@@ -744,7 +849,7 @@ func request_api(api_path: String, query_params: Dictionary = {}, request_body =
 			"Client-Id": client_id,
 			"Content-Type": "application/json",
 		},
-		request_body_text,
+		serialized_request_body,
 		request_method,
 	)
 
