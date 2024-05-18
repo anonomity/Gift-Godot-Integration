@@ -20,3 +20,5 @@ data_*/
 
 # Temporary Files
 *.tmp
+
+/custom/
