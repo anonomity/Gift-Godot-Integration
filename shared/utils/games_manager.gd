@@ -1,7 +1,7 @@
 class_name GamesManager extends RefCounted
 
 const PATH_ROOT_CUSTOM: String = "res://custom"
-const NAME_FILE_PROJECT: String = ".godot-twitch-games-project"
+const NAME_FILE_PROJECT: String = "project.godot-twitch-games.json"
 
 const PATH_ROOT_GAMES = "res://scenes/games"
 const NAME_FILE_GAME_ICON = "game_icon.png"
@@ -45,25 +45,33 @@ func get_games(force: bool = false) -> Array:
 
 	var da_custom := DirAccess.open(PATH_ROOT_CUSTOM)
 	if da_custom:
-		print("No custom directory: %s" % PATH_ROOT_CUSTOM)
-		
 		da_custom.list_dir_begin()
 		var custom_name := da_custom.get_next()
 		while custom_name != "":
 			var path_dir_custom := "%s/%s" % [PATH_ROOT_CUSTOM, custom_name]
 			var path_file_custom_project := "%s/%s" % [path_dir_custom, NAME_FILE_PROJECT]
 
-			if da_custom.current_is_dir() and FileAccess.file_exists(path_file_custom_project):
-				var path_dir_custom_games := "%s/games" %  [path_dir_custom]
-				if DirAccess.dir_exists_absolute(path_dir_custom_games):
-					game_root_paths.append(path_dir_custom_games)
+			if da_custom.current_is_dir():
+				if FileAccess.file_exists(path_file_custom_project):
+					var path_dir_custom_games := "%s/games" %  [path_dir_custom]
+					if DirAccess.dir_exists_absolute(path_dir_custom_games):
+						game_root_paths.append(path_dir_custom_games)
+					else:
+						print("Not a valid custom games project games directory: %s" % path_dir_custom_games)
+				else:
+					print("Not a valid custom games project file: %s" % path_file_custom_project)
+			else:
+				print("Not a valid custom games directory: %s" % path_dir_custom)
 
 			custom_name = da_custom.get_next()
 		da_custom.list_dir_end()
+	else:
+		print("No custom resources directory: %s" % PATH_ROOT_CUSTOM)
 	
 	var search_games: Array[Dictionary] = []
 
 	for path_root_games in game_root_paths:
+		print("Searching for stream games in %s" % path_root_games)
 		var da_games := DirAccess.open(path_root_games)
 		if not da_games:
 			push_warning("Invalid game root path: %s" % path_root_games)
