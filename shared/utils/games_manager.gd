@@ -78,37 +78,50 @@ func get_games(force: bool = false) -> Array:
 			continue
 
 		da_games.list_dir_begin()
-		var game_name := da_games.get_next()
-		while game_name != "":
-			if not da_games.current_is_dir():
-				print_verbose("Skipping %s because it is not a directory (in %s)" % [game_name, path_root_games])
-			elif game_name.begins_with("_"):
-				print_verbose("Skipping %s because it starts with '_' (in %s)" % [game_name, path_root_games])
-			else:
-				print("Loading game metadata for '%s' (from %s)" % [path_root_games, game_name])
-				
-				var path_dir_game := "%s/%s" % [path_root_games, game_name]
-				var config := load_config(path_dir_game)
-				config["id"] = game_name
-				config["scene_path"] = "%s/%s.tscn" % [path_dir_game, game_name]
-				config.get_or_add("name", game_name)
-				config.get_or_add("order", search_games.size())
+		var next_game_name := da_games.get_next()
+		while next_game_name != "":
+			var game_name := next_game_name
+			var is_dir := da_games.current_is_dir()
+			next_game_name = da_games.get_next()
 
-				var icon := load_icon(path_dir_game)
-				if icon:
-					config["icon"] = icon
+			if !is_dir:
+				print("[GamesManager] Skipping \"%s\" because it is not a directory (in %s)" % [game_name, path_root_games])
+				continue
 
-				var icon_scene := load_icon_scene(path_dir_game)
-				if icon_scene:
-					config["icon_scene"] = icon_scene
-				
-				var constants := load_constants(path_dir_game)
-				if constants:
-					config["constants"] = constants
+			if game_name.begins_with("_"):
+				print("[GamesManager] Skipping \"%s\" because it starts with '_' (in %s)" % [game_name, path_root_games])
+				continue
 
-				search_games.append(config)
-			
-			game_name = da_games.get_next()
+			print("[GamesManager] Loading game metadata for \"%s\" (from %s)" % [game_name, path_root_games])
+
+			var path_dir_game := "%s/%s" % [path_root_games, game_name]
+			var config := load_config(path_dir_game)
+
+			# TODO: Make this a GUI configuration
+			if config.get_or_add("enabled", true) == false:
+				print("[GamesManager] Skipping \"%s\" because it is disabled" % [
+					game_name,
+				])
+				continue
+
+			config["id"] = game_name
+			config["scene_path"] = "%s/%s.tscn" % [path_dir_game, game_name]
+			config.get_or_add("name", game_name)
+			config.get_or_add("order", search_games.size())
+
+			var icon := load_icon(path_dir_game)
+			if icon:
+				config["icon"] = icon
+
+			var icon_scene := load_icon_scene(path_dir_game)
+			if icon_scene:
+				config["icon_scene"] = icon_scene
+
+			var constants := load_constants(path_dir_game)
+			if constants:
+				config["constants"] = constants
+
+			search_games.append(config)
 
 	search_games.sort_custom(sort_by_order)
 	search_games.map(delete_order)
@@ -116,7 +129,7 @@ func get_games(force: bool = false) -> Array:
 	games = search_games
 	if search_games.is_empty():
 		push_error("There are no games in %s or %s" % [PATH_ROOT_GAMES, PATH_ROOT_CUSTOM])
-	
+
 	return games
 
 func load_constants(path_game: String) -> Script:
