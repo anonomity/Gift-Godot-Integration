@@ -7,8 +7,8 @@ var config: ConfigFile
 var config_file_name := "config.cfg"
 var config_file_path: String
 var config_file_locations := [
-	"res://" + config_file_name,
 	"user://" + config_file_name,
+	"res://" + config_file_name,
 ]
 
 var data: Variant
@@ -24,7 +24,8 @@ var allowed_start_config: Dictionary = {
 
 func _init(load_config: bool = true, prefer_cfg: bool = true) -> void:
 	if load_config:
-		_read_config(prefer_cfg)
+		if !_read_config(prefer_cfg):
+			_save()
 
 ##
 ## public
@@ -75,6 +76,8 @@ func _read_config(prefer_cfg: bool = true) -> bool:
 	if not prefer_cfg:
 		actual_search_paths.insert(0, PATH_APP_CONFIG_JSON)
 
+	var error_codes: PackedInt32Array = []
+
 	for location in actual_search_paths:
 		print("Loading config from %s" % location)
 		data = _load_config_file(location)
@@ -83,10 +86,24 @@ func _read_config(prefer_cfg: bool = true) -> bool:
 			config_file_path = location
 			break
 		else:
-			var code = data.get("code", 1) as int
-			push_error("Error loading config from %s (%d)" % [location, code])
+			var code := data.get("code", 1) as int
+			var index := error_codes.bsearch(code)
+			if index >= error_codes.size():
+				error_codes.append(code)
+			elif error_codes[index] != code:
+				error_codes.insert(index, code)
+			push_error("Error loading config from %s (%d: %s)" % [
+				location,
+				code,
+				error_string(code),
+			])
 
 	if data.has("error"):
+		if error_codes.size() == 1 and error_codes[0] == Error.ERR_FILE_NOT_FOUND:
+			config_file_path = actual_search_paths.front()
+			_save()
+			return true
+
 		data = null
 		return false
 

@@ -13,11 +13,9 @@ var autostart: bool = false:
 	set(value):
 		if value == autostart:
 			return
-
 		autostart = value
 		preferences["autostart"] = autostart
 		GamePreferencesHelper.save_preferences(preferences)
-
 		if autostart and state != GAME_STATE.RUNNING:
 			next_round()
 
@@ -107,6 +105,10 @@ func change_positions() -> void:
 
 func fire_viewer(viewer_metadata: Dictionary, angle: float, power: float) -> void:
 	var search_name: String = viewer_metadata.get("display_name").to_lower()
+	#print("search name ", search_name)
+	#if search_name == "dynology1" or search_name == "dynology":
+		#await get_tree().create_timer(5.0).timeout
+	
 	if not viewers.has(search_name):
 		await spawn_viewer(search_name, viewer_metadata)
 

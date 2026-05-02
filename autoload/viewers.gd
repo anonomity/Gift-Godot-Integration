@@ -160,6 +160,7 @@ func reset() -> void:
 
 
 ## add viewer to the active list
+@warning_ignore("unused_parameter")
 func add(viewer_name: String, color: String) -> void:
 	if closed:
 		return
@@ -385,4 +386,3 @@ func test_viewer_lists(active_count: int, waiting_count: int, dead_count: int) -
 	assert(viewers_active.size() == active_count)
 	assert(viewers_waiting.size() == waiting_count)
 	assert(viewers_dead.size() == dead_count)
-

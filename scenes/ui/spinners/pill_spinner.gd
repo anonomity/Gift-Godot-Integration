@@ -104,18 +104,18 @@ func _get_minimum_size() -> Vector2:
 	var quadrant_size = distance_from_center + scaled_pill_length / 2.0
 	return Vector2(quadrant_size, quadrant_size) * 2.0
 
-func _compute_length(angle_difference: float) -> float:
-	var expansion = max(0, cos(angle_difference))
+func _compute_length(p_angle_difference: float) -> float:
+	var expansion := maxf(0, cos(p_angle_difference))
 	expansion = pow(expansion, 8)
-	var scale = 1.0 + (pill_expansion - 1.0) * expansion
-	var scaled_pill_length = pill_length * scale
+	var pill_scale = 1.0 + (pill_expansion - 1.0) * expansion
+	var scaled_pill_length = pill_length * pill_scale
 	return scaled_pill_length
 
 func _draw() -> void:
-	var angle_per_pill = TAU / pill_count
-	var distance_multiplier = _compute_distance_multiplier()
+	var angle_per_pill := TAU / pill_count
+	var distance_multiplier := _compute_distance_multiplier()
 
-	var center = self.size / 2.0
+	var center := self.size / 2.0
 
 	#RenderingServer.canvas_item_add_circle(get_canvas_item(), center, pill_length * 2.0, Color.LIGHT_CORAL)
 
@@ -134,9 +134,9 @@ func _draw() -> void:
 		if not shape:
 			continue
 
-		var angle_rad = angle_per_pill * index
-		var angle_difference = angle_rad - progress
-		var scaled_pill_length = _compute_length(angle_difference)
+		var angle_rad := angle_per_pill * index
+		var angle_delta := angle_rad - progress
+		var scaled_pill_length = _compute_length(angle_delta)
 		shape.height = scaled_pill_length
 		var base_distance_from_center = pill_length
 		var distance_from_center = base_distance_from_center * distance_multiplier + scaled_pill_length / 2.0

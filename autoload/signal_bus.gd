@@ -22,6 +22,7 @@ func _ready():
 	SignalBus.transparency_toggled.connect(on_transparency_toggled)
 	SignalBus.ui_visibility_toggled.connect(on_ui_visibility_toggled)
 
+@warning_ignore("unused_parameter")
 func _process(delta):
 	if Input.is_action_just_pressed("transparent"):
 		toggle_transparency()
@@ -74,9 +75,9 @@ func on_transparency_toggled(transparent: bool) -> void:
 	for node in get_tree().get_nodes_in_group("Background"):
 		node.visible = not transparent
 
-func emit_ui_visibility_toggled(ui_visible: bool) -> void:
-	self.ui_visible = ui_visible
-	ui_visibility_toggled.emit(self.ui_visible)
+func emit_ui_visibility_toggled(p_ui_visible: bool) -> void:
+	ui_visible = p_ui_visible
+	ui_visibility_toggled.emit(p_ui_visible)
 
-func on_ui_visibility_toggled(ui_visible: bool):
-	self.ui_visible = ui_visible
+func on_ui_visibility_toggled(p_ui_visible: bool):
+	ui_visible = p_ui_visible

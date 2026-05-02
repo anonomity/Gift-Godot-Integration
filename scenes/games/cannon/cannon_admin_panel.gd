@@ -6,7 +6,6 @@ const CannonGame = preload("res://scenes/games/cannon/cannon.gd")
 	set(value):
 		if value == scene_node:
 			return
-
 		scene_node = value
 		_synchronize_to_scene()
 

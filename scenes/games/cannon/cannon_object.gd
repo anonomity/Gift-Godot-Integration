@@ -8,9 +8,9 @@ extends Node2D
 func shoot() -> void:
 	animation_player.play("shoot")
 	spawn_particles()
-	
+
 func spawn_particles() -> void:
 	var instance: GPUParticles2D = shoot_particles.instantiate()
 	add_child(instance)
 	instance.rotation = sprite_2d.rotation
-	
+

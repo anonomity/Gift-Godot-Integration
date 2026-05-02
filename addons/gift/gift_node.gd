@@ -297,7 +297,7 @@ func validate_developer_integration(client_id: String, client_secret: String) ->
 func authenticate(force: bool = false) -> bool:
 	print("Checking token...")
 	var token_blob = load_token_blob()
-	
+
 	if not force:
 		if token_blob.is_empty():
 			force = true
@@ -319,7 +319,7 @@ func authenticate(force: bool = false) -> bool:
 		token = token_blob
 
 	user_login = await get_token_user_login()
-	
+
 	var attempts = 0
 	while user_login == "" and attempts < 3:
 		attempts += 1
@@ -338,7 +338,12 @@ func authenticate(force: bool = false) -> bool:
 	return true
 
 func _get_token_thread(scope: String) -> void:
-	OS.shell_open("https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=" + client_id + "&redirect_uri=http://localhost:18297&scope=" + scope)
+	var token_uri := "https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=%s&redirect_uri=http://localhost:18297&scope=%s" % [
+		client_id,
+		scope,
+	]
+	# print_debug("Opening URI in the default browser: %s" % [token_uri])
+	OS.shell_open(token_uri)
 
 	if server and server.is_listening():
 		server.stop()
@@ -398,7 +403,7 @@ func _request_access_token(authorization_code: String) -> void:
 
 	var response_body_raw = access_token_response.get("response_body") as PackedByteArray
 	assert(response_body_raw != null, "Invalid response body")
-	
+
 	var token_json = response_body_raw.get_string_from_utf8()
 	var token = JSON.parse_string(token_json) as Dictionary
 	assert(token != null, "Invalid token response")
@@ -447,28 +452,28 @@ func get_token_user_login() -> String:
 		"https://id.twitch.tv/oauth2/validate",
 		{},
 		{
-			
+
 			"User-Agent": USER_AGENT_VALUE,
 			"Authorization": "OAuth %s" % [access_token],
 		}
 	)
-	
+
 	var response_code = response.get("response_code", 0) as int
 	var response_body = response.get("response_body", null) as PackedByteArray
 	if not response_code == 200:
 		printerr("Unable to get authenticated user: %d" % [response_code])
 		return ""
-	
+
 	if response_body == null:
 		printerr("Invalid response body")
 		return ""
-	
+
 	var response_body_text = response_body.get_string_from_utf8()
 	var payload = JSON.parse_string(response_body_text)
 	if payload == null:
 		printerr("Failed to parse response body")
 		return ""
-	
+
 	user_id = payload.get("user_id", "")
 	var user_login = payload.get("login", "")
 	return user_login
@@ -480,7 +485,7 @@ func refresh_token() -> bool:
 			to_remove.append(entry)
 	for n in to_remove:
 		eventsub_messages.erase(n)
-	
+
 	var token_blob = load_token_blob()
 	var refresh_token = token_blob.get("refresh_token", null)
 	if not refresh_token is String:
@@ -500,7 +505,7 @@ func refresh_token() -> bool:
 			"refresh_token": refresh_token,
 		})
 	)
-	
+
 	var response_code = response.get("response_code", 0) as int
 	if not response_code == 200:
 		printerr("Error refreshing token: %d" % [response_code])
@@ -754,7 +759,7 @@ func validate_channel_id(channel: String = "") -> String:
 	if keys.size() < 1:
 		printerr("No channel")
 		return ""
-	
+
 	for key in keys:
 		channel_id = key.strip_edges().to_lower()
 		if not channel_id == "":
@@ -867,7 +872,7 @@ func get_channel_points_custom_rewards() -> Array[ChannelPointsReward]:
 			#"only_manageable_rewards": true,
 		}
 	)
-	
+
 	if response.response_code != 200 or not response.response_body is Dictionary:
 		printerr("Error retrieving channel points rewards: %d %s" % [
 			response.response_code,
@@ -952,9 +957,9 @@ func request_http(uri: String, query_params: Dictionary = {}, headers: Dictionar
 
 	if request_body != null and request_method == HTTPClient.METHOD_GET:
 		request_method = HTTPClient.METHOD_POST
-	
+
 	var request_uri = uri
-	
+
 	var keys = query_params.keys()
 	if keys.size() > 0:
 		request_uri += "?"

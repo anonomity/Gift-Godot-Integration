@@ -6,18 +6,39 @@ var _parser = JSON.new()
 var data: Variant
 var error: bool = false
 
-func _init(file_name: String, autoload: bool=true):
-	assert(file_name != null)
-	assert(file_name != "")
+func _init(
+	p_file_name: String,
+	p_autoload: bool = true,
+	p_create_if_missing: bool = true,
+):
+	assert(p_file_name != null)
+	assert(!p_file_name.is_empty())
 
-	_file_name = file_name
-	if autoload:
-		self.load()
+	_file_name = p_file_name
+	if p_autoload:
+		self.load(p_create_if_missing)
 
-func load() -> bool:
+func load(
+	p_create_if_missing: bool = false,
+) -> bool:
+	var file_path := "user://" + _file_name
+	if !FileAccess.file_exists(file_path):
+		if p_create_if_missing:
+			save()
+		else:
+			push_error("[JsonManager] File does not exist: \"%s\"" % [
+				file_path,
+			])
+			return false
+	
 	var file = FileAccess.open("user://" + _file_name, FileAccess.READ)
-	if not file:
-		printerr("Failed to open for reading \"%s\": %d" % [_file_name, FileAccess.get_open_error()])
+	if file == null:
+		var error_code := FileAccess.get_open_error()
+		push_error("[JsonManager] Error (%d) opening \"%s\": %s" % [
+			error_code,
+			_file_name,
+			error_string(error_code),
+		])
 		error = true
 		return false
 

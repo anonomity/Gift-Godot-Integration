@@ -23,6 +23,7 @@ func new_version_available(project_version: String, latest_version: String) -> b
 	
 	return false
 
+@warning_ignore("unused_parameter")
 func on_request_completed(result, response_code, headers, body) -> void:
 	var json = JSON.parse_string(body.get_string_from_utf8())
 
