@@ -21,7 +21,7 @@ func load() -> bool:
 		error = true
 		return false
 
-	var json = file.get_as_text(true)
+	var json = file.get_as_text()
 	var result = _parser.parse(json)
 	if result:
 		printerr("Error parsing \"%s\"" % [_file_name])

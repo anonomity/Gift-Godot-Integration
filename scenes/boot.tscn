@@ -1,8 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://cmcv4u0irtgl8"]
+[gd_scene format=3 uid="uid://cmcv4u0irtgl8"]
 
-[ext_resource type="Script" path="res://scenes/boot.gd" id="1_878vd"]
+[ext_resource type="Script" uid="uid://d3cmb2c47a1rf" path="res://scenes/boot.gd" id="1_878vd"]
 
-[node name="Boot" type="Control"]
+[node name="Boot" type="Control" unique_id=756127307]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0

@@ -17,7 +17,7 @@ func load_preferences(default: Dictionary = {}, name: String = "") -> Dictionary
 	var file: FileAccess = FileAccess.open(path_for_game, FileAccess.READ)
 	if file and file.get_position() < file.get_length():
 		var parser = JSON.new()
-		parser.parse(file.get_as_text(true))
+		parser.parse(file.get_as_text())
 		return parser.data
 	return default
 

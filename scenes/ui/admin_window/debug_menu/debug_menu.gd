@@ -7,7 +7,7 @@ var preferences: DebugPreferences = DebugPreferences.new()
 
 func _ready():
 	load_preferences()
-	
+
 	var viewers = preferences.active_viewers
 	GiftSingleton.set_active_viewers(viewers)
 	GiftSingleton.viewer_joined.connect(_on_viewer_joined)
@@ -17,7 +17,7 @@ func load_preferences():
 	var file: FileAccess = FileAccess.open(PATH_PREFERENCES_DEBUG, FileAccess.READ)
 	if file and file.get_position() < file.get_length():
 		var parser = JSON.new()
-		parser.parse(file.get_as_text(true))
+		parser.parse(file.get_as_text())
 		preferences = DebugPreferences.from_dictionary(parser.data)
 	toggle_restart_with_active_viewers.button_pressed = preferences.restart_with_active_viewers
 
@@ -52,7 +52,7 @@ func _on_toggle_restart_with_active_viewers_toggled(toggled_on):
 class DebugPreferences:
 	var restart_with_active_viewers: bool = false
 	var active_viewers: Dictionary = {}
-	
+
 	static func from_dictionary(dict: Dictionary) -> DebugPreferences:
 		var preferences = DebugPreferences.new()
 		preferences.restart_with_active_viewers = dict["restart_with_active_viewers"]
@@ -61,12 +61,12 @@ class DebugPreferences:
 			for key in active_viewers_to_load:
 				preferences.active_viewers[key] = active_viewers_to_load[key]
 		return preferences
-	
+
 	func to_dictionary() -> Dictionary:
 		var dict: Dictionary = {}
 		dict["restart_with_active_viewers"] = restart_with_active_viewers
 		if restart_with_active_viewers:
 			dict["active_viewers"] = active_viewers
 		return dict
-	
+
 

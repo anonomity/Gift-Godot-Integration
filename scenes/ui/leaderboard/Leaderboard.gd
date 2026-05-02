@@ -37,7 +37,7 @@ func load():
 		printerr("Empty leaderboard for " + id)
 		return
 
-	var json_leaderboard = file.get_as_text(true)
+	var json_leaderboard = file.get_as_text()
 	var json = JSON.new()
 	var parse_result = json.parse(json_leaderboard)
 	if not parse_result == OK:
