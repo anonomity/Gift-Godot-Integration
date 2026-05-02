@@ -271,29 +271,29 @@ func on_event(type: String, data: Dictionary) -> void:
 		"channel.subscription.end":
 			pass
 		"channel.subscription.gift":
-			var user_login = data["user_login"]
+			var user_name = data["user_login"]
 			var total = data["total"]
 			var cumulative_total = data["cumulative_total"]
 			var is_anonymous = data["is_anonymous"]
-			subscription_gifted.emit(user_login, total, cumulative_total, is_anonymous)
+			subscription_gifted.emit(user_name, total, cumulative_total, is_anonymous)
 		"channel.ban":
-			var user_login = data["user_login"]
+			var user_name = data["user_login"]
 			var is_permanent = data["is_permanent"]
 			var ends_at = data["ends_at"]
 			var until = Time.get_unix_time_from_datetime_string(ends_at) if not is_permanent else 0
-			user_ban_status_changed.emit(user_login, until, true)
+			user_ban_status_changed.emit(user_name, until, true)
 		"channel.unban":
-			var user_login = data["user_login"]
-			user_ban_status_changed.emit(user_login, 0, false)
+			var user_name = data["user_login"]
+			user_ban_status_changed.emit(user_name, 0, false)
 		"channel.channel_points_custom_reward_redemption.add":
-			var user_login = data["user_login"]
+			var user_name = data["user_login"]
 			var reward = data["reward"]
 			var reward_id = reward["id"]
 			var redeemed_at = Time.get_unix_time_from_datetime_string(data["redeemed_at"])
-			reward_redemption.emit(user_login, reward_id, redeemed_at)
+			reward_redemption.emit(user_name, reward_id, redeemed_at)
 
 			var action_id = ChannelPointsRewardMapping.get_action_for_reward_id(reward_id)
-			action_triggered.emit(action_id, user_login, redeemed_at)
+			action_triggered.emit(action_id, user_name, redeemed_at)
 
 func emit_status(new_status: STATUS) -> void:
 	status.emit(new_status)
